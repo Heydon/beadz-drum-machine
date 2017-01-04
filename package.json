@@ -1,0 +1,35 @@
+{
+  "name": "vue-elixir-starter",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "watch": {
+    "start": "src/**/*.*"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "gulp --production && node server.js",
+    "watch": "npm-watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Heydon/vue-elixir-starter.git"
+  },
+  "author": "Heydon Pickering <heydon@heydonworks.com> (http://www.heydonworks.com)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Heydon/vue-elixir-starter/issues"
+  },
+  "homepage": "https://github.com/Heydon/vue-elixir-starter#readme",
+  "dependencies": {
+    "axios": "^0.15.3",
+    "express": "^4.14.0",
+    "gulp": "^3.9.1",
+    "laravel-elixir": "^6.0.0-15",
+    "laravel-elixir-vue-2": "^0.3.0",
+    "laravel-elixir-webpack-official": "^1.0.10",
+    "npm-watch": "^0.1.7",
+    "vue": "^2.1.8",
+    "vue-axios": "^1.2.2"
+  }
+}

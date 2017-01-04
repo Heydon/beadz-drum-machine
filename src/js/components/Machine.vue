@@ -1,0 +1,411 @@
+<template>
+  <div class="drum-machine">
+    <div class="bpm">
+      <div class="bpm-slider">
+        <input type="range" id="bpm" min="0" max="240" v-model="bpm">
+      </div>
+      <label for="bpm">
+        {{bpm}}
+        <span aria-hidden="true">bpm</span>
+        <span class="vh">beats per minute</span>
+      </label>
+    </div>
+    <div class="tracks">
+      <fieldset role="group" aria-labelledby="track-legend" v-for="sound in sounds" class="track">
+        <legend id="track-legend">{{sound.name}}</legend>
+        <div class="track-main">
+          <div class="track-addRemove">
+            <button aria-label="remove beat" @click="removeBeat(sound)">
+              <svg><use xlink:href="#minus"></use></svg>
+            </button>
+            <button aria-label="add beat" @click="addBeat(sound)">
+              <svg><use xlink:href="#plus"></use></svg>
+            </button>
+          </div>
+          <div class="track-beats" role="group" :aria-labelledby="sound.name + '-track-label' | slugify">
+            <span class="track-label" :id="sound.name + '-track-label' | slugify">
+              {{sound.name}}
+              <span class="vh">( {{sound.length}} quarter beats )</span>
+            </span>
+            <div v-for="n in sound.length" :style="{ width: beatLength }">
+              <input type="checkbox" :id="sound.name + '-beat-' + n | slugify" :value="n" v-model="sound.active">
+              <label :for="sound.name + '-beat-' + n | slugify" :id="sound.name + '-beat-' + n + '-label' | slugify"><span class="vh">Quarter Beat {{n}}</span></label>
+            </div>
+          </div>
+          <div class="track-muteSettings">
+            <button @click="sound.muted = !sound.muted" :aria-pressed="sound.muted.toString()" aria-label="mute">
+              <mute-icon></mute-icon>
+            </button>
+            <button class="open-settings" @click="sound.expanded = !sound.expanded" :aria-expanded="sound.expanded.toString()" aria-label="settings">
+              <svg><use xlink:href="#cog"></use></svg>
+            </button>
+          </div>
+        </div>
+        <transition name="slide">
+          <fieldset role="group" aria-labelledby="track-settings-label" v-if="sound.expanded" class="track-settings">
+            <legend id="track-settings-label">Track settings</legend>
+            <div class="setting">
+              <label for="vol">Volume</label>
+              <div>
+                <input type="range" id="vol" min="0" max="100" v-model="sound.volume" aria-describedby="vol-desc">
+                <span id="vol-desc">From 0 to 100</span>
+              </div>
+            </div>
+            <div class="setting">
+              <p aria-hidden="true">Probability</p>
+              <div role="group" aria-label="probability">
+                <label for="prob-chance" class="vh">Chance</label>
+                <input type="number" id="prob-chance" min="1" v-model="sound.probability.chance">
+                <span aria-hidden="true" class="between">in</span>
+                <label for="prob-in" class="vh">In</label>
+                <input type="number" id="prob-in" min="1" v-model="sound.probability.in">
+              </div>
+            </div>
+            <div class="setting">
+              <label for="fluc">Pitch fluctuation</label>
+              <div>
+                <input type="range" id="fluc" min="0" max="100" v-model="sound.fluctuationLevel" aria-describedby="fluc-desc">
+                <span id="fluc-desc">From 0 to 100</span>
+              </div>
+            </div>
+            <div class="setting">
+              <p aria-hidden="true">Override sounds</p>
+              <div class="checkbox-group" role="group" aria-label="Override other sounds">
+                <div v-for="otherSound in sounds" v-if="otherSound.name !== sound.name">
+                  <input type="checkbox" :id="otherSound.name | slugify" :value="otherSound.name" v-model="sound.overrides">
+                  <label :for="otherSound.name | slugify">{{otherSound.name}}</label>
+                </div>
+              </div>
+            </div>
+          </fieldset>
+        </transition>
+      </fieldset>
+    </div>
+    <div class="play-stop">
+      <button :aria-pressed="isPlaying.toString()" @click="playOrStop" aria-label="play">
+        <play-icon></play-icon>
+      </button>
+    </div>
+  </div>
+</template>
+
+<script>
+import PlayIcon from './components/PlayIcon.vue';
+import MuteIcon from './components/MuteIcon.vue';
+
+export default {
+  data() {
+    return {
+      sounds: null,
+      audioContext: null,
+      bpm: 120,
+      beatLength: null,
+      futureTickTime: 0.0,
+      isPlaying: false
+    }
+  },
+  components: {
+    'play-icon': PlayIcon,
+    'mute-icon': MuteIcon
+  },
+  methods: {
+    audioContextCheck() {
+      if (typeof AudioContext !== 'undefined') {
+        return new AudioContext();
+      } else if (typeof webkitAudioContext !== 'undefined') {
+        return new webkitAudioContext();
+      } else if (typeof mozAudioContext !== 'undefined') {
+        return new mozAudioContext();
+      } else {
+        throw new Error('AudioContext not supported');
+      }
+    },
+    soundLoader(path) {
+      var soundObject = {};
+
+      var getSound = new XMLHttpRequest();
+      getSound.open('GET', path, true);
+      getSound.responseType = 'arraybuffer';
+
+      var parent = this;
+
+      getSound.onload = function() {
+        parent.audioContext.decodeAudioData(getSound.response, function(buffer) {
+          soundObject.soundToPlay = buffer;
+        });
+      }
+
+      getSound.send();
+
+      soundObject.play = function(volumeVal, time, fluctuationLevel) {
+        var volume = parent.audioContext.createGain();
+        volume.gain.value = volumeVal;
+        var playSound = parent.audioContext.createBufferSource();
+        playSound.buffer = soundObject.soundToPlay;
+
+        // Naturalization by fluctuating pitch slightly
+        var bend = Math.floor(Math.random() * fluctuationLevel) + -Math.abs(fluctuationLevel);
+        playSound.detune.value = bend;
+
+        // Volume control
+        playSound.connect(volume);
+        volume.connect(parent.audioContext.destination)
+
+        playSound.start(time)
+      }
+
+      return soundObject;
+    },
+    setSoundData() {
+      this.sounds = [
+        {
+          name: 'kick',
+          buffer: this.soundLoader('sounds/kick.mp3'),
+          length: 8,
+          current: 1,
+          active: [1],
+          probability: {
+            chance: 1,
+            in: 1
+          },
+          fluctuationLevel: 0,
+          overrides: [],
+          volume: 100,
+          muted: false,
+          expanded: false
+        },
+        {
+          name: 'snare',
+          buffer: this.soundLoader('sounds/snare.mp3'),
+          length: 8,
+          current: 1,
+          active: [5],
+          probability: {
+            chance: 1,
+            in: 1
+          },
+          fluctuationLevel: 40,
+          overrides: ['kick', 'snare light'],
+          volume: 100,
+          muted: false,
+          expanded: false
+        },
+        {
+          name: 'snare light',
+          buffer: this.soundLoader('sounds/snare_light.mp3'),
+          length: 8,
+          current: 1,
+          active: [],
+          probability: {
+            chance: 1,
+            in: 1
+          },
+          fluctuationLevel: 40,
+          overrides: ['snare'],
+          volume: 80,
+          muted: false,
+          expanded: false
+        },
+        {
+          name: 'hi hat',
+          buffer: this.soundLoader('sounds/hat.mp3'),
+          length: 8,
+          current: 1,
+          active: [1, 3, 5, 7],
+          probability: {
+            chance: 1,
+            in: 1
+          },
+          fluctuationLevel: 60,
+          overrides: [],
+          volume: 80,
+          muted: false,
+          expanded: false
+        },
+        {
+          name: 'ride',
+          buffer: this.soundLoader('sounds/ride.mp3'),
+          length: 8,
+          current: 1,
+          active: [1, 5],
+          probability: {
+            chance: 1,
+            in: 1
+          },
+          fluctuationLevel: 40,
+          overrides: [],
+          volume: 100,
+          muted: true,
+          expanded: false
+        },
+        {
+          name: 'crash',
+          buffer: this.soundLoader('sounds/crash.mp3'),
+          length: 8,
+          current: 1,
+          active: [1],
+          probability: {
+            chance: 1,
+            in: 4
+          },
+          fluctuationLevel: 40,
+          overrides: ['hat'],
+          volume: 90,
+          muted: true,
+          expanded: false
+        }
+      ]
+    },
+    futureTick() {
+      var noteLength = 60 / this.bpm;
+      this.futureTickTime += 0.25 * noteLength;
+
+      this.sounds.forEach(function(sound) {
+        sound.current++;
+        if (sound.current > sound.length) {
+          sound.current = 1;
+        }
+      });
+    },
+    scheduleNote() {
+      var parent = this;
+      this.sounds.forEach(function(sound) {
+        parent.playOrNot(sound, sound.active.includes(sound.current), parent);
+      });
+    },
+    playOrNot(sound, currentIsActive, parent) {
+      if (!currentIsActive) {
+        return;
+      }
+
+      if (sound.muted) {
+        return;
+      }
+
+      if (!this.probability(sound.probability)) {
+        return;
+      }
+
+      var overridden = false;
+
+      this.sounds.forEach(function(otherSound) {
+        if (otherSound.overrides.includes(sound.name)) {
+          if (!otherSound.muted) {
+            if (otherSound.active.includes(otherSound.current)) {
+              overridden = true;
+            }
+          }
+        }
+      });
+
+      if (overridden) {
+        return;
+      }
+
+      sound.buffer.play(
+        sound.volume / 100,
+        parent.futureTickTime,
+        sound.fluctuationLevel
+      );
+
+      // Animation of corresponding label
+      var soundID = this.slugify(sound.name + '-beat-' + sound.current) + '-label';
+      console.log(soundID);
+      var animElem = document.getElementById(soundID);
+
+      // Only if the element exists (may be suppressed due to track beat length)
+      if (animElem) {
+        animElem.setAttribute('class', '');
+        window.setTimeout(function() {
+          animElem.setAttribute('class', 'pulse-anim');
+        }, parent.futureTickTime);
+      }
+
+    },
+    scheduler() {
+      while (this.futureTickTime < this.audioContext.currentTime + 0.1) {
+        this.scheduleNote();
+        this.futureTick();
+      }
+      window.t = window.setTimeout(this.scheduler, 50.0);
+    },
+    probability(ratio) {
+      var set = [];
+
+      if (ratio.chance >= ratio.in) {
+        return true;
+      }
+
+      var i = 0;
+      do {
+        i += 1;
+        set.push(true);
+      }
+      while (i < ratio.chance);
+
+      var n = 0;
+      do {
+        n += 1;
+        set.push(false);
+      }
+      while (n < (ratio.in - ratio.chance));
+
+      var playIt = set[Math.floor(Math.random()*set.length)];
+      console.log(playIt);
+      return playIt;
+    },
+    playOrStop() {
+      this.play();
+    },
+    addBeat(sound) {
+      sound.length += 1;
+    },
+    removeBeat(sound) {
+      sound.length -= 1;
+    },
+    play() {
+      this.isPlaying = !this.isPlaying;
+      if (this.isPlaying) {
+        this.sounds.forEach(function(sound) {
+          sound.current = 1;
+        });
+
+        this.futureTickTime = this.audioContext.currentTime;
+        this.scheduler();
+        this.playLabel = 'stop';
+      } else {
+        window.clearTimeout(window.t);
+        this.playLabel = 'play';
+      }
+    },
+    findLongest() {
+      var lengths = [];
+      this.sounds.forEach(function(sound) {
+        lengths.push(sound.length);
+      });
+      return Math.max.apply(Math, lengths);
+    },
+    slugify(text) {
+      return text.toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/[^\w\-]+/g, '')
+      .replace(/\-\-+/g, '-')
+      .replace(/^-+/, '')
+      .replace(/-+$/, '');
+    }
+  },
+  watch: {
+    sounds: {
+      handler: function() {
+        this.beatLength = 100 / this.findLongest() + '%';
+      },
+      deep: true
+    }
+  },
+  mounted: function() {
+    this.audioContext = this.audioContextCheck();
+    this.setSoundData();
+    this.beatLength = this.findLongest();
+  }
+}
+</script>

@@ -1,0 +1,11 @@
+html {
+  font-size: calc(1em + 1vw);
+  font-family: sans-serif;
+  line-height: 1.5;
+}
+
+body {
+  font-family: inherit;
+  line-height: inherit;
+  color: inherit;
+}
