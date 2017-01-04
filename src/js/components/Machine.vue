@@ -90,8 +90,8 @@
 </template>
 
 <script>
-import PlayIcon from './components/PlayIcon.vue';
-import MuteIcon from './components/MuteIcon.vue';
+import PlayIcon from './PlayIcon.vue';
+import MuteIcon from './MuteIcon.vue';
 
 export default {
   data() {

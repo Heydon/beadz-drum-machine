@@ -114,7 +114,7 @@ input[type=range]::-webkit-slider-thumb {
   height: 1.75rem;
   width: 1.75rem;
   border-radius: 0.25rem;
-  background: #222 url(images/grip.svg) no-repeat center;
+  background: #222 url(../images/grip.svg) no-repeat center;
   background-size: 0.66rem auto;
   cursor: pointer;
   margin-top: -0.75rem;
@@ -130,7 +130,7 @@ input[type=range]::-moz-range-thumb {
   height: 1.75rem;
   width: 1.75rem;
   border-radius: 0.25rem;
-  background: #222 url(images/grip.svg) no-repeat center;
+  background: #222 url(../images/grip.svg) no-repeat center;
   background-size: 0.66rem auto;
   cursor: pointer;
 }
@@ -145,7 +145,7 @@ input[type=range]::-ms-thumb {
   height: 1.75rem;
   width: 1.75rem;
   border-radius: 0.25rem;
-  background: #222 url(images/grip.svg) no-repeat center;
+  background: #222 url(../images/grip.svg) no-repeat center;
   background-size: 0.66rem auto;
   cursor: pointer;
 }
@@ -261,7 +261,7 @@ fieldset {
 }
 
 .checkbox-group [type="checkbox"]:checked + label::before {
-  background-image: url(images/tick.svg);
+  background-image: url(../images/tick.svg);
   background-position: center;
   background-size: 100% auto;
 }
@@ -350,7 +350,7 @@ fieldset {
 }
 
 .track-beats > div {
-  background-image: url(images/line.svg);
+  background-image: url(../images/line.svg);
   background-repeat: repeat-x;
   background-position: center;
   background-size: auto 0.25rem;

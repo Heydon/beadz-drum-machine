@@ -1,11 +1,470 @@
 html {
-  font-size: calc(1em + 1vw);
-  font-family: sans-serif;
+  font-size: calc(1em + 0.5vw);
+  color: #222;
+  font-family: Fredoka One, sans-serif;
   line-height: 1.5;
 }
 
-body {
-  font-family: inherit;
-  line-height: inherit;
+*, ::before, ::after {
   color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  box-sizing: border-box;
+}
+
+body {
+  background: #fefefe;
+  overflow-x: hidden;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+* + * {
+  margin-top: 2.25rem;
+}
+
+body, br, dt, dd, th, td, option, [hidden] + * {
+  margin-top: 0;
+}
+
+li + li {
+  margin-top: 0.5rem;
+}
+
+label + * {
+  margin-top: 0;
+}
+
+.drum-machine * {
+  margin-top: 0;
+}
+
+/* basic buttons */
+
+button {
+  background: #222;
+  border: 0;
+  border-radius: 50%;
+}
+
+button:focus,
+.track-beats [type="checkbox"]:focus + label,
+.checkbox-group [type="checkbox"]:focus + label::before,
+[type="number"]:focus {
+  box-shadow: 0 0 0 0.25rem #fac;
+  outline: none;
+}
+
+button svg {
+  width: 100%;
+  height: 100%;
+}
+
+.track-main button {
+  background: transparent;
+}
+
+[aria-label="mute"][aria-pressed="true"] .waves {
+  display: none;
+}
+
+/* layout */
+
+.central-col {
+  margin: 3rem auto;
+  max-width: 45rem;
+  padding: 0 1.5rem;
+}
+
+h1 {
+  text-align: center;
+  font-size: 2rem;
+}
+
+/* range inputs */
+
+input[type=range] {
+  -webkit-appearance: none;
+  width: 100%;
+  background: transparent;
+}
+
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+}
+
+input[type=range]:focus {
+  background: blue;
+}
+
+input[type=range]::-ms-track {
+  width: 100%;
+  cursor: pointer;
+  background: transparent;
+  border-color: transparent;
+  color: transparent;
+}
+
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  box-shadow: 0 0 0 0.2rem #fefefe;
+  height: 1.75rem;
+  width: 1.75rem;
+  border-radius: 0.25rem;
+  background: #222 url(../images/grip.svg) no-repeat center;
+  background-size: 0.66rem auto;
+  cursor: pointer;
+  margin-top: -0.75rem;
+}
+
+input[type=range]:focus::-webkit-slider-thumb {
+  outline: none;
+  box-shadow: 0 0 0 0.25rem #fac;
+}
+
+input[type=range]::-moz-range-thumb {
+  border: none;
+  height: 1.75rem;
+  width: 1.75rem;
+  border-radius: 0.25rem;
+  background: #222 url(../images/grip.svg) no-repeat center;
+  background-size: 0.66rem auto;
+  cursor: pointer;
+}
+
+input[type=range]:focus::-moz-range-thumb {
+  outline: none;
+  box-shadow: 0 0 0 0.25rem #fac;
+}
+
+input[type=range]::-ms-thumb {
+  border: none;
+  height: 1.75rem;
+  width: 1.75rem;
+  border-radius: 0.25rem;
+  background: #222 url(../images/grip.svg) no-repeat center;
+  background-size: 0.66rem auto;
+  cursor: pointer;
+}
+
+input[type=range]:focus {
+  outline: none;
+}
+
+input[type=range]:focus::-ms-thumb {
+  outline: none;
+  box-shadow: 0 0 0 0.25rem #fac;
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 0.33rem;
+  cursor: pointer;
+  background-color: #222;
+  border-radius: 0.25rem;
+  border: none;
+}
+
+input[type=range]::-moz-range-track {
+  width: 100%;
+  height: 0.33rem;
+  cursor: pointer;
+  background: #222;
+  border-radius: 0.25rem;
+  border: none;
+}
+
+input[type=range]:focus::-moz-range-track {
+  outline: none;
+}
+
+input[type=range]::-ms-track {
+  width: 100%;
+  height: 0.33rem;
+  cursor: pointer;
+  background: transparent;
+  border-color: transparent;
+  border-width: 0;
+  color: transparent;
+}
+
+input[type=range]::-ms-fill-lower {
+  background: #222;
+  border: none;
+  border-radius: 0;
+}
+
+input[type=range]::-ms-fill-upper {
+  background: #222;
+  border: none;
+  border-radius: 0;
+}
+
+input[type=range]:focus::-ms-fill-upper {
+  background: #222;
+}
+
+/* forms */
+
+fieldset {
+ border: 0;
+}
+
+[type="number"] {
+  display: inline;
+  width: 3rem;
+  text-align: center;
+  padding: 0.25rem;
+  border: 0.25rem solid;
+  border-radius: 0.25rem;
+  line-height: 1;
+}
+
+/* utilities */
+
+.vh, legend:not(.show), [type="checkbox"] {
+  position: absolute !important;
+  height: 1px; width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+}
+
+[hidden] {
+  display: none;
+}
+
+.between {
+  padding: 0 0.5rem;
+}
+
+.checkbox-group {
+  display: flex;
+}
+
+.checkbox-group label {
+  margin-right: 1rem;
+}
+
+.checkbox-group label::before {
+  content: '';
+  display: inline-block;
+  width: 1.33rem;
+  height: 1.33rem;
+  margin-right: 0.25rem;
+  border: 0.25rem solid #222;
+  border-radius: 0.25rem;
+  vertical-align: -0.33rem;
+  background-color: #fff;
+}
+
+.checkbox-group [type="checkbox"]:checked + label::before {
+  background-image: url(../images/tick.svg);
+  background-position: center;
+  background-size: 100% auto;
+}
+
+/* bpm row */
+
+.bpm {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.bpm-slider {
+  width: 20%;
+  margin-right: 0.5rem;
+}
+
+.bpm label {
+  font-size: 1.25rem;
+  text-transform: uppercase;
+}
+
+/* main track */
+
+.track {
+  margin-top: 2rem;
+}
+
+.track-main, .track-beats {
+  display: flex;
+}
+
+.track-main {
+  justify-content: space-between;
+}
+
+.track-beats {
+  width: calc(100% - 10.5rem);
+  margin: 0 0.25rem 0 0.75rem;
+  position: relative;
+}
+
+.track-label {
+  position: absolute;
+  left: 1rem;
+  top: -1.66rem;
+}
+
+.track-label::before {
+  content: '';
+  display: inline-block;
+  width: 0.25rem;
+  height: 1.25rem;
+  position: absolute;
+  top: 1.33rem;
+  left: 0.5rem;
+  background: #222;
+}
+
+.track-main button {
+  width: 2rem;
+  height: 2rem;
+  border: 0;
+}
+
+.track-beats label {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  background: #fff;
+  border: 0.25rem solid #222;
+  border-radius: 50%;
+  position: relative;
+  left: -0.5rem;
+}
+
+.track-beats :checked + label {
+  background: #222;
+  box-shadow: 0 0 0 0.2rem #222;
+}
+
+.track-addRemove, .track-muteSettings, .track-beats > div {
+  display: flex;
+  align-items: center;
+}
+
+.track-beats > div {
+  background-image: url(../images/line.svg);
+  background-repeat: repeat-x;
+  background-position: center;
+  background-size: auto 0.25rem;
+}
+
+.track-beats > div:last-child {
+  position: relative;
+}
+
+.track-beats > div:last-child::after {
+  content: '';
+  display: inline-block;
+  width: 0.25rem;
+  height: 1rem;
+  background: #222;
+  border-radius: 0.125rem;
+  position: absolute;
+  right: 0;
+}
+
+/* track settings */
+
+.track-settings {
+  padding: 1.25em 0;
+  border-bottom: 2px solid;
+  overflow: hidden;
+}
+
+.setting {
+  display: flex;
+  align-items: center;
+}
+
+.setting + .setting {
+  margin-top: 1rem;
+}
+
+.setting > * {
+  flex: 1 0 auto;
+}
+
+.setting > :last-child {
+  flex: 3;
+  display: flex;
+  align-items: center;
+}
+
+.setting > :first-child {
+  flex: 1;
+  line-height: 1.125;
+}
+
+.setting span[id] {
+  display: none;
+}
+
+/* play/stop */
+
+.play-stop {
+  text-align: center;
+  margin-top: 1em;
+}
+
+.play-stop button {
+  width: 3rem;
+  height: 3rem;
+}
+
+.play-stop button[aria-pressed="false"] .pause-icon {
+  display: none;
+}
+
+.play-stop button[aria-pressed="true"] .play-icon {
+  display: none;
+}
+
+/* animations */
+
+@keyframes pulse {
+  0% {
+    transform: none;
+  }
+  50% {
+    transform: scale(1.5);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+label[id] {
+  will-change: transform;
+}
+
+.pulse-anim {
+  animation: pulse 0.1s 1 ease-in;
+}
+
+.slide-enter-active, .slide-leave-active {
+  transition: opacity 1s;
+}
+
+.slide-leave-active {
+  transition: opacity 0.25s;
+}
+
+.slide-enter, .slide-leave-active {
+  opacity: 0;
+}
+
+.open-settings {
+  transition: transform 0.5s ease-out;
+}
+
+.open-settings[aria-expanded="true"] {
+  transform: rotate(45deg);
 }

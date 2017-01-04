@@ -8,17 +8,17 @@ Vue.use(VueAxios, axios);
 
 Vue.filter('slugify', function (text) {
   return text.toLowerCase()
-             .replace(/\s+/g, '-')
-             .replace(/[^\w\-]+/g, '')
-             .replace(/\-\-+/g, '-')
-             .replace(/^-+/, '')
-             .replace(/-+$/, '');
+     .replace(/\s+/g, '-')
+     .replace(/[^\w\-]+/g, '')
+     .replace(/\-\-+/g, '-')
+     .replace(/^-+/, '')
+     .replace(/-+$/, '');
 });
 
 new Vue({
   el: '#app',
   components: {
-    'page-header': Heading,
-    'drum-machine': BabyNames
+    'page-header': Header,
+    'drum-machine': Machine
   }
 });
