@@ -11,8 +11,8 @@
       </label>
     </div>
     <div class="tracks">
-      <fieldset role="group" aria-labelledby="track-legend" v-for="sound in sounds" class="track">
-        <legend id="track-legend">{{sound.name}}</legend>
+      <fieldset role="group" :aria-labelledby="sound.name + '-track-legend' | slugify" v-for="sound in sounds" class="track">
+        <legend :id="sound.name + '-track-legend' | slugify">{{sound.name}} track</legend>
         <div class="track-main">
           <div class="track-addRemove">
             <button aria-label="remove beat" @click="removeBeat(sound)">
@@ -24,8 +24,8 @@
           </div>
           <div class="track-beats" role="group" :aria-labelledby="sound.name + '-track-label' | slugify">
             <span class="track-label" :id="sound.name + '-track-label' | slugify">
+              <span class="vh">{{sound.length}} quarter beats for</span>
               {{sound.name}}
-              <span class="vh">( {{sound.length}} quarter beats )</span>
             </span>
             <div v-for="n in sound.length" :style="{ width: beatsLength }">
               <input type="checkbox" :id="sound.name + '-beat-' + n | slugify" :value="n" v-model="sound.active">
