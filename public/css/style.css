@@ -10,6 +10,7 @@ html {
   font-family: inherit;
   font-size: inherit;
   box-sizing: border-box;
+  font-weight: normal;
 }
 
 body {
@@ -23,7 +24,7 @@ body {
 }
 
 * + * {
-  margin-top: 2.25rem;
+  margin-top: 1.5rem;
 }
 
 body, br, dt, dd, th, td, option, [hidden] + * {
@@ -71,7 +72,7 @@ button svg {
   display: none;
 }
 
-/* layout */
+/* main layout */
 
 .central-col {
   margin: 3rem auto;
@@ -82,6 +83,20 @@ button svg {
 h1 {
   text-align: center;
   font-size: 2rem;
+}
+
+header {
+  background: #222;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  color: #fff;
+  padding: 1rem;
+}
+
+header p {
+  margin-top: 0;
 }
 
 /* range inputs */
