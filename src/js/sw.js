@@ -15,7 +15,7 @@ self.addEventListener('install', function(event) {
         './sounds/snare.mp3',
         './images/grip.svg',
         './images/line.svg',
-        './images/tick.svg'
+        './images/tick.svg',
         'https://fonts.googleapis.com/css?family=Fredoka+One'
       ]);
     })

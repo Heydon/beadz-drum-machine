@@ -172,6 +172,7 @@ export default {
             chance: 1,
             in: 1
           },
+          probable: true,
           fluctuationLevel: 0,
           overrides: [],
           volume: 100,
@@ -188,6 +189,7 @@ export default {
             chance: 1,
             in: 1
           },
+          probable: true,
           fluctuationLevel: 40,
           overrides: ['kick', 'snare light'],
           volume: 100,
@@ -204,6 +206,7 @@ export default {
             chance: 1,
             in: 1
           },
+          probable: true,
           fluctuationLevel: 40,
           overrides: ['snare'],
           volume: 80,
@@ -220,6 +223,7 @@ export default {
             chance: 1,
             in: 1
           },
+          probable: true,
           fluctuationLevel: 60,
           overrides: [],
           volume: 80,
@@ -236,6 +240,7 @@ export default {
             chance: 1,
             in: 1
           },
+          probable: true,
           fluctuationLevel: 40,
           overrides: [],
           volume: 100,
@@ -252,6 +257,7 @@ export default {
             chance: 1,
             in: 4
           },
+          probable: true,
           fluctuationLevel: 40,
           overrides: ['hi hat', 'ride'],
           volume: 90,
@@ -274,6 +280,10 @@ export default {
     scheduleNote() {
       var parent = this;
       this.sounds.forEach(function(sound) {
+        sound.probable = parent.probability(sound.probability);
+        console.log(sound.name + ': ' + sound.probable);
+      });
+      this.sounds.forEach(function(sound) {
         parent.playOrNot(sound, sound.active.includes(sound.current), parent);
       });
     },
@@ -286,7 +296,7 @@ export default {
         return;
       }
 
-      if (!this.probability(sound.probability)) {
+      if (!sound.probable) {
         return;
       }
 
@@ -295,8 +305,10 @@ export default {
       this.sounds.forEach(function(otherSound) {
         if (otherSound.overrides.includes(sound.name)) {
           if (!otherSound.muted) {
-            if (otherSound.active.includes(otherSound.current)) {
-              overridden = true;
+            if (otherSound.probable) {
+              if (otherSound.active.includes(otherSound.current)) {
+                overridden = true;
+              }
             }
           }
         }
