@@ -8,7 +8,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "gulp --production && node server.js",
+    "start": "gulp && node server.js",
     "watch": "npm-watch"
   },
   "repository": {

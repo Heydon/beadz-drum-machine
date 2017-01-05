@@ -6,7 +6,7 @@
 	  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <link href="https://fonts.googleapis.com/css?family=Fredoka+One" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="css/style.css">
-    <title>Beadz: A Quantum, Polymetric Drum Machine</title>
+    <title>Beadz: A Quantum, Polymetric Drum Machine!</title>
   </head>
   <body>
     <svg hidden>
@@ -34,5 +34,10 @@
       </div>
     </div>
     <script src="js/app.js"></script>
+    <script>
+      navigator.serviceWorker.register('sw.js', {
+        scope: './'
+      });
+    </script>
   </body>
 </html>

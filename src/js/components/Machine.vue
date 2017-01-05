@@ -27,7 +27,7 @@
               {{sound.name}}
               <span class="vh">( {{sound.length}} quarter beats )</span>
             </span>
-            <div v-for="n in sound.length" :style="{ width: beatLength }">
+            <div v-for="n in sound.length" :style="{ width: beatsLength }">
               <input type="checkbox" :id="sound.name + '-beat-' + n | slugify" :value="n" v-model="sound.active">
               <label :for="sound.name + '-beat-' + n | slugify" :id="sound.name + '-beat-' + n + '-label' | slugify"><span class="vh">Quarter Beat {{n}}</span></label>
             </div>
@@ -99,7 +99,7 @@ export default {
       sounds: null,
       audioContext: null,
       bpm: 120,
-      beatLength: null,
+      beatsLength: null,
       futureTickTime: 0.0,
       isPlaying: false
     }
@@ -137,7 +137,7 @@ export default {
 
       getSound.send();
 
-      soundObject.play = function(volumeVal, time, fluctuationLevel) {
+      soundObject.play = function(volumeVal, time, fluctuationLevel, animElem) {
         var volume = parent.audioContext.createGain();
         volume.gain.value = volumeVal;
         var playSound = parent.audioContext.createBufferSource();
@@ -149,9 +149,13 @@ export default {
 
         // Volume control
         playSound.connect(volume);
-        volume.connect(parent.audioContext.destination)
+        volume.connect(parent.audioContext.destination);
 
-        playSound.start(time)
+        playSound.start(time);
+
+        window.requestAnimFrame(function() {
+          parent.pulse(animElem);
+        });
       }
 
       return soundObject;
@@ -249,7 +253,7 @@ export default {
             in: 4
           },
           fluctuationLevel: 40,
-          overrides: ['hat'],
+          overrides: ['hi hat', 'ride'],
           volume: 90,
           muted: true,
           expanded: false
@@ -302,24 +306,15 @@ export default {
         return;
       }
 
+      var soundID = this.slugify(sound.name + '-beat-' + sound.current) + '-label';
+      var animElem = document.getElementById(soundID);
+
       sound.buffer.play(
         sound.volume / 100,
         parent.futureTickTime,
-        sound.fluctuationLevel
+        sound.fluctuationLevel,
+        animElem
       );
-
-      // Animation of corresponding label
-      var soundID = this.slugify(sound.name + '-beat-' + sound.current) + '-label';
-      console.log(soundID);
-      var animElem = document.getElementById(soundID);
-
-      // Only if the element exists (may be suppressed due to track beat length)
-      if (animElem) {
-        animElem.setAttribute('class', '');
-        window.setTimeout(function() {
-          animElem.setAttribute('class', 'pulse-anim');
-        }, parent.futureTickTime);
-      }
 
     },
     scheduler() {
@@ -351,7 +346,6 @@ export default {
       while (n < (ratio.in - ratio.chance));
 
       var playIt = set[Math.floor(Math.random()*set.length)];
-      console.log(playIt);
       return playIt;
     },
     playOrStop() {
@@ -392,12 +386,18 @@ export default {
       .replace(/\-\-+/g, '-')
       .replace(/^-+/, '')
       .replace(/-+$/, '');
+    },
+    pulse(elem) {
+      elem.setAttribute('class', 'pulse-anim');
+      window.setTimeout(function() {
+        elem.setAttribute('class', '');
+      }, 100);
     }
   },
   watch: {
     sounds: {
       handler: function() {
-        this.beatLength = 100 / this.findLongest() + '%';
+        this.beatsLength = 100 / this.findLongest() + '%';
       },
       deep: true
     }
@@ -405,7 +405,17 @@ export default {
   mounted: function() {
     this.audioContext = this.audioContextCheck();
     this.setSoundData();
-    this.beatLength = this.findLongest();
+    this.beatsLength = this.findLongest();
+    window.requestAnimFrame = (function (){
+      return  window.requestAnimationFrame ||
+              window.webkitRequestAnimationFrame ||
+              window.mozRequestAnimationFrame ||
+              window.oRequestAnimationFrame ||
+              window.msRequestAnimationFrame ||
+              function (callback) {
+                window.setTimeout(callback, 1000 / 60);
+              };
+    })();
   }
 }
 </script>

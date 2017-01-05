@@ -10,6 +10,12 @@ elixir(function(mix) {
       'src/css/style.css',
       'public/css/style.css'
     ).copy(
+      'src/js/sw.js',
+      'public/sw.js'
+    ).copy(
+        'src/js/sw-cache-polyfill.js',
+        'public/sw-cache-polyfill.js'
+    ).copy(
       'src/images',
       'public/images'
     ).copy(
