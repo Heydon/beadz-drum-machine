@@ -13,8 +13,8 @@ elixir(function(mix) {
       'src/js/sw.js',
       'docs/sw.js'
     ).copy(
-        'src/js/sw-cache-polyfill.js',
-        'docs/sw-cache-polyfill.js'
+      'src/js/sw-cache-polyfill.js',
+      'docs/sw-cache-polyfill.js'
     ).copy(
       'src/images',
       'docs/images'
