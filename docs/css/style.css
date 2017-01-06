@@ -494,7 +494,7 @@ label[id] {
 
 /* smaller viewports */
 
-@media (max-width: 650px) {
+@media (max-width: 750px) {
 
   .central-col {
     margin: 1em;
