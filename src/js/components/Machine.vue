@@ -72,8 +72,8 @@
               <p aria-hidden="true">Override sounds</p>
               <div class="checkbox-group" role="group" aria-label="Override other sounds">
                 <div v-for="otherSound in sounds" v-if="otherSound.name !== sound.name">
-                  <input type="checkbox" :id="otherSound.name | slugify" :value="otherSound.name" v-model="sound.overrides">
-                  <label :for="otherSound.name | slugify">{{otherSound.name}}</label>
+                  <input type="checkbox" :id="sound.name + '-overrides-' + otherSound.name | slugify" :value="otherSound.name" v-model="sound.overrides">
+                  <label :for="sound.name + '-overrides-' + otherSound.name | slugify">{{otherSound.name}}</label>
                 </div>
               </div>
             </div>
