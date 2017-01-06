@@ -127,20 +127,18 @@ export default {
       getSound.open('GET', path, true);
       getSound.responseType = 'arraybuffer';
 
-      var parent = this;
-
-      getSound.onload = function() {
-        parent.audioContext.decodeAudioData(getSound.response, function(buffer) {
+      getSound.onload = () => {
+        this.audioContext.decodeAudioData(getSound.response, function(buffer) {
           soundObject.soundToPlay = buffer;
         });
       }
 
       getSound.send();
 
-      soundObject.play = function(volumeVal, time, fluctuationLevel, animElem) {
-        var volume = parent.audioContext.createGain();
+      soundObject.play = (volumeVal, time, fluctuationLevel, animElem) => {
+        var volume = this.audioContext.createGain();
         volume.gain.value = volumeVal;
-        var playSound = parent.audioContext.createBufferSource();
+        var playSound = this.audioContext.createBufferSource();
         playSound.buffer = soundObject.soundToPlay;
 
         // Naturalization by fluctuating pitch slightly
@@ -149,12 +147,12 @@ export default {
 
         // Volume control
         playSound.connect(volume);
-        volume.connect(parent.audioContext.destination);
+        volume.connect(this.audioContext.destination);
 
         playSound.start(time);
 
-        window.requestAnimFrame(function() {
-          parent.pulse(animElem);
+        window.requestAnimFrame(() => {
+          this.pulse(animElem);
         });
       }
 
@@ -207,9 +205,9 @@ export default {
             in: 1
           },
           probable: true,
-          fluctuationLevel: 40,
-          overrides: ['snare'],
-          volume: 80,
+          fluctuationLevel: 60,
+          overrides: [],
+          volume: 100,
           muted: false,
           expanded: false
         },
@@ -278,16 +276,15 @@ export default {
       });
     },
     scheduleNote() {
-      var parent = this;
-      this.sounds.forEach(function(sound) {
-        sound.probable = parent.probability(sound.probability);
+      this.sounds.forEach((sound) => {
+        sound.probable = this.probability(sound.probability);
         console.log(sound.name + ': ' + sound.probable);
       });
-      this.sounds.forEach(function(sound) {
-        parent.playOrNot(sound, sound.active.includes(sound.current), parent);
+      this.sounds.forEach((sound) => {
+        this.playOrNot(sound, sound.active.includes(sound.current));
       });
     },
-    playOrNot(sound, currentIsActive, parent) {
+    playOrNot(sound, currentIsActive) {
       if (!currentIsActive) {
         return;
       }
@@ -302,7 +299,7 @@ export default {
 
       var overridden = false;
 
-      this.sounds.forEach(function(otherSound) {
+      this.sounds.forEach((otherSound) => {
         if (otherSound.overrides.includes(sound.name)) {
           if (!otherSound.muted) {
             if (otherSound.probable) {
@@ -323,7 +320,7 @@ export default {
 
       sound.buffer.play(
         sound.volume / 100,
-        parent.futureTickTime,
+        this.futureTickTime,
         sound.fluctuationLevel,
         animElem
       );

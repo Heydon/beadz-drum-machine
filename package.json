@@ -4,11 +4,12 @@
   "description": "",
   "main": "index.js",
   "watch": {
-    "start": "src/**/*.*"
+    "dev": "src/**/*.*"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "gulp && node server.js",
+    "dev": "gulp && node server.js",
+    "production": "gulp --production",
     "watch": "npm-watch"
   },
   "repository": {
@@ -30,6 +31,7 @@
     "laravel-elixir-webpack-official": "^1.0.10",
     "npm-watch": "^0.1.7",
     "vue": "^2.1.8",
-    "vue-axios": "^1.2.2"
+    "vue-axios": "^1.2.2",
+    "vue-localstorage": "^0.1.3"
   }
 }

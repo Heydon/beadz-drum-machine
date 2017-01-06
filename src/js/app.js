@@ -1,10 +1,9 @@
 import Vue from 'vue';
-import axios from 'axios';
-import VueAxios from 'vue-axios';
+import VueLocalStorage from 'vue-localstorage'
 import Header from './components/Header.vue';
 import Machine from './components/Machine.vue';
 
-Vue.use(VueAxios, axios);
+Vue.use(VueLocalStorage);
 
 Vue.filter('slugify', function (text) {
   return text.toLowerCase()
