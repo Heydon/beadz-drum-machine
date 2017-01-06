@@ -4,7 +4,6 @@ self.addEventListener('install', function(event) {
   event.waitUntil(
     caches.open('beadz').then(function(cache) {
       return cache.addAll([
-        './',
         './css/style.css',
         './js/app.js',
         './sounds/crash.mp3',

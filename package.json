@@ -9,7 +9,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "gulp && node server.js",
-    "production": "gulp --production",
+    "production": "gulp --production && node server.js",
     "watch": "npm-watch"
   },
   "repository": {
