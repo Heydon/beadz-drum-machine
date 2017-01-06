@@ -36,9 +36,11 @@
     </div>
     <script src="js/app.js"></script>
     <script>
-      navigator.serviceWorker.register('sw.js', {
-        scope: './'
-      });
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js', {
+          scope: './'
+        });
+      }
     </script>
   </body>
 </html>
