@@ -2,10 +2,10 @@
   <div class="drum-machine">
     <div class="bpm">
       <div class="bpm-slider">
-        <input type="range" id="bpm" min="0" max="240" v-model="bpm">
+        <input type="range" id="bpm" min="0" max="240" v-model="meta.bpm">
       </div>
       <label for="bpm">
-        {{bpm}}
+        {{meta.bpm}}
         <span aria-hidden="true">bpm</span>
         <span class="vh">beats per minute</span>
       </label>
@@ -27,7 +27,7 @@
               <span class="vh">{{sound.length}} quarter beats for</span>
               {{sound.name}}
             </span>
-            <div v-for="n in sound.length" :style="{ width: beatsLength }">
+            <div v-for="n in sound.length" :style="{ width: meta.beatsLength }">
               <input type="checkbox" :id="sound.name + '-beat-' + n | slugify" :value="n" v-model="sound.active">
               <label :for="sound.name + '-beat-' + n | slugify" :id="sound.name + '-beat-' + n + '-label' | slugify"><span class="vh">Quarter Beat {{n}}</span></label>
             </div>
@@ -82,7 +82,7 @@
       </fieldset>
     </div>
     <div class="play-stop">
-      <button :aria-pressed="isPlaying.toString()" @click="playOrStop" aria-label="play">
+      <button :aria-pressed="meta.isPlaying.toString()" @click="playOrStop" aria-label="play">
         <play-icon></play-icon>
       </button>
     </div>
@@ -97,11 +97,10 @@ export default {
   data() {
     return {
       sounds: null,
-      audioContext: null,
-      bpm: 120,
-      beatsLength: null,
-      futureTickTime: 0.0,
-      isPlaying: false
+      meta: {
+        bpm: 120,
+        isPlaying: false
+      }
     }
   },
   components: {
@@ -128,7 +127,7 @@ export default {
       getSound.responseType = 'arraybuffer';
 
       getSound.onload = () => {
-        this.audioContext.decodeAudioData(getSound.response, function(buffer) {
+        this.meta.audioContext.decodeAudioData(getSound.response, (buffer) => {
           soundObject.soundToPlay = buffer;
         });
       }
@@ -136,9 +135,9 @@ export default {
       getSound.send();
 
       soundObject.play = (volumeVal, time, fluctuationLevel, animElem) => {
-        var volume = this.audioContext.createGain();
+        var volume = this.meta.audioContext.createGain();
         volume.gain.value = volumeVal;
-        var playSound = this.audioContext.createBufferSource();
+        var playSound = this.meta.audioContext.createBufferSource();
         playSound.buffer = soundObject.soundToPlay;
 
         // Naturalization by fluctuating pitch slightly
@@ -147,7 +146,7 @@ export default {
 
         // Volume control
         playSound.connect(volume);
-        volume.connect(this.audioContext.destination);
+        volume.connect(this.meta.audioContext.destination);
 
         playSound.start(time);
 
@@ -158,7 +157,7 @@ export default {
 
       return soundObject;
     },
-    setSoundData() {
+    setState() {
       this.sounds = [
         {
           name: 'kick',
@@ -262,13 +261,20 @@ export default {
           muted: true,
           expanded: false
         }
-      ]
+      ],
+      this.meta = {
+        audioContext: this.audioContextCheck(),
+        bpm: 120,
+        beatsLength: this.findLongest(),
+        futureTickTime: 0.0,
+        isPlaying: false
+      }
     },
     futureTick() {
-      var noteLength = 60 / this.bpm;
-      this.futureTickTime += 0.25 * noteLength;
+      var noteLength = 60 / this.meta.bpm;
+      this.meta.futureTickTime += 0.25 * noteLength;
 
-      this.sounds.forEach(function(sound) {
+      this.sounds.forEach((sound) => {
         sound.current++;
         if (sound.current > sound.length) {
           sound.current = 1;
@@ -278,7 +284,6 @@ export default {
     scheduleNote() {
       this.sounds.forEach((sound) => {
         sound.probable = this.probability(sound.probability);
-        console.log(sound.name + ': ' + sound.probable);
       });
       this.sounds.forEach((sound) => {
         this.playOrNot(sound, sound.active.includes(sound.current));
@@ -320,14 +325,14 @@ export default {
 
       sound.buffer.play(
         sound.volume / 100,
-        this.futureTickTime,
+        this.meta.futureTickTime,
         sound.fluctuationLevel,
         animElem
       );
 
     },
     scheduler() {
-      while (this.futureTickTime < this.audioContext.currentTime + 0.1) {
+      while (this.meta.futureTickTime < this.meta.audioContext.currentTime + 0.1) {
         this.scheduleNote();
         this.futureTick();
       }
@@ -367,13 +372,13 @@ export default {
       sound.length -= 1;
     },
     play() {
-      this.isPlaying = !this.isPlaying;
-      if (this.isPlaying) {
-        this.sounds.forEach(function(sound) {
+      this.meta.isPlaying = !this.meta.isPlaying;
+      if (this.meta.isPlaying) {
+        this.sounds.forEach((sound) => {
           sound.current = 1;
         });
 
-        this.futureTickTime = this.audioContext.currentTime;
+        this.meta.futureTickTime = this.meta.audioContext.currentTime;
         this.scheduler();
         this.playLabel = 'stop';
       } else {
@@ -383,7 +388,7 @@ export default {
     },
     findLongest() {
       var lengths = [];
-      this.sounds.forEach(function(sound) {
+      this.sounds.forEach((sound) => {
         lengths.push(sound.length);
       });
       return Math.max.apply(Math, lengths);
@@ -398,24 +403,22 @@ export default {
     },
     pulse(elem) {
       elem.setAttribute('class', 'pulse-anim');
-      window.setTimeout(function() {
+      window.setTimeout(() => {
         elem.setAttribute('class', '');
       }, 100);
     }
   },
   watch: {
     sounds: {
-      handler: function() {
-        this.beatsLength = 100 / this.findLongest() + '%';
+      handler() {
+        this.meta.beatsLength = 100 / this.findLongest() + '%';
       },
       deep: true
     }
   },
-  mounted: function() {
-    this.audioContext = this.audioContextCheck();
-    this.setSoundData();
-    this.beatsLength = this.findLongest();
-    window.requestAnimFrame = (function (){
+  mounted() {
+    this.setState();
+    window.requestAnimFrame = (() => {
       return  window.requestAnimationFrame ||
               window.webkitRequestAnimationFrame ||
               window.mozRequestAnimationFrame ||
