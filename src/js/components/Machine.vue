@@ -96,6 +96,7 @@ import MuteIcon from './MuteIcon.vue';
 export default {
   data() {
     return {
+      audioContext: null,
       sounds: null,
       meta: {
         bpm: 120,
@@ -127,7 +128,7 @@ export default {
       getSound.responseType = 'arraybuffer';
 
       getSound.onload = () => {
-        this.meta.audioContext.decodeAudioData(getSound.response, (buffer) => {
+        this.audioContext.decodeAudioData(getSound.response, (buffer) => {
           soundObject.soundToPlay = buffer;
         });
       }
@@ -135,9 +136,9 @@ export default {
       getSound.send();
 
       soundObject.play = (volumeVal, time, fluctuationLevel, animElem) => {
-        var volume = this.meta.audioContext.createGain();
+        var volume = this.audioContext.createGain();
         volume.gain.value = volumeVal;
-        var playSound = this.meta.audioContext.createBufferSource();
+        var playSound = this.audioContext.createBufferSource();
         playSound.buffer = soundObject.soundToPlay;
 
         // Naturalization by fluctuating pitch slightly
@@ -146,7 +147,7 @@ export default {
 
         // Volume control
         playSound.connect(volume);
-        volume.connect(this.meta.audioContext.destination);
+        volume.connect(this.audioContext.destination);
 
         playSound.start(time);
 
@@ -157,117 +158,136 @@ export default {
 
       return soundObject;
     },
+    loadSounds() {
+      this.sounds.forEach((sound) => {
+        console.log(sound.url);
+        sound.buffer = this.soundLoader(sound.url);
+      });
+    },
     setState() {
-      this.sounds = [
-        {
-          name: 'kick',
-          buffer: this.soundLoader('sounds/kick.mp3'),
-          length: 8,
-          current: 1,
-          active: [1],
-          probability: {
-            chance: 1,
-            in: 1
+      var storage = this.$localStorage.get('drum-machine-state');
+      if (storage) {
+        var savedData = JSON.parse(storage);
+        this.sounds = savedData.sounds;
+        this.meta = savedData.meta;
+        console.log(savedData);
+      } else {
+        this.sounds = [
+          {
+            name: 'kick',
+            url: 'sounds/kick.mp3',
+            buffer: null,
+            length: 8,
+            current: 1,
+            active: [1],
+            probability: {
+              chance: 1,
+              in: 1
+            },
+            probable: true,
+            fluctuationLevel: 0,
+            overrides: [],
+            volume: 100,
+            muted: false,
+            expanded: false
           },
-          probable: true,
-          fluctuationLevel: 0,
-          overrides: [],
-          volume: 100,
-          muted: false,
-          expanded: false
-        },
-        {
-          name: 'snare',
-          buffer: this.soundLoader('sounds/snare.mp3'),
-          length: 8,
-          current: 1,
-          active: [5],
-          probability: {
-            chance: 1,
-            in: 1
+          {
+            name: 'snare',
+            url: 'sounds/snare.mp3',
+            buffer: null,
+            length: 8,
+            current: 1,
+            active: [5],
+            probability: {
+              chance: 1,
+              in: 1
+            },
+            probable: true,
+            fluctuationLevel: 40,
+            overrides: ['kick', 'snare light'],
+            volume: 100,
+            muted: false,
+            expanded: false
           },
-          probable: true,
-          fluctuationLevel: 40,
-          overrides: ['kick', 'snare light'],
-          volume: 100,
-          muted: false,
-          expanded: false
-        },
-        {
-          name: 'snare light',
-          buffer: this.soundLoader('sounds/snare_light.mp3'),
-          length: 8,
-          current: 1,
-          active: [],
-          probability: {
-            chance: 1,
-            in: 1
+          {
+            name: 'snare light',
+            url: 'sounds/snare_light.mp3',
+            buffer: null,
+            length: 8,
+            current: 1,
+            active: [],
+            probability: {
+              chance: 1,
+              in: 1
+            },
+            probable: true,
+            fluctuationLevel: 60,
+            overrides: [],
+            volume: 100,
+            muted: false,
+            expanded: false
           },
-          probable: true,
-          fluctuationLevel: 60,
-          overrides: [],
-          volume: 100,
-          muted: false,
-          expanded: false
-        },
-        {
-          name: 'hi hat',
-          buffer: this.soundLoader('sounds/hat.mp3'),
-          length: 8,
-          current: 1,
-          active: [1, 3, 5, 7],
-          probability: {
-            chance: 1,
-            in: 1
+          {
+            name: 'hi hat',
+            url: 'sounds/hat.mp3',
+            buffer: null,
+            length: 8,
+            current: 1,
+            active: [1, 3, 5, 7],
+            probability: {
+              chance: 1,
+              in: 1
+            },
+            probable: true,
+            fluctuationLevel: 60,
+            overrides: [],
+            volume: 80,
+            muted: false,
+            expanded: false
           },
-          probable: true,
-          fluctuationLevel: 60,
-          overrides: [],
-          volume: 80,
-          muted: false,
-          expanded: false
-        },
-        {
-          name: 'ride',
-          buffer: this.soundLoader('sounds/ride.mp3'),
-          length: 8,
-          current: 1,
-          active: [1, 5],
-          probability: {
-            chance: 1,
-            in: 1
+          {
+            name: 'ride',
+            url: 'sounds/ride.mp3',
+            buffer: null,
+            length: 8,
+            current: 1,
+            active: [1, 5],
+            probability: {
+              chance: 1,
+              in: 1
+            },
+            probable: true,
+            fluctuationLevel: 40,
+            overrides: [],
+            volume: 100,
+            muted: true,
+            expanded: false
           },
-          probable: true,
-          fluctuationLevel: 40,
-          overrides: [],
-          volume: 100,
-          muted: true,
-          expanded: false
-        },
-        {
-          name: 'crash',
-          buffer: this.soundLoader('sounds/crash.mp3'),
-          length: 8,
-          current: 1,
-          active: [1],
-          probability: {
-            chance: 1,
-            in: 4
-          },
-          probable: true,
-          fluctuationLevel: 40,
-          overrides: ['hi hat', 'ride'],
-          volume: 90,
-          muted: true,
-          expanded: false
-        }
-      ],
-      this.meta = {
-        audioContext: this.audioContextCheck(),
-        bpm: 120,
-        beatsLength: this.findLongest(),
-        futureTickTime: 0.0,
-        isPlaying: false
+          {
+            name: 'crash',
+            url: 'sounds/crash.mp3',
+            buffer: null,
+            length: 8,
+            current: 1,
+            active: [1],
+            probability: {
+              chance: 1,
+              in: 4
+            },
+            probable: true,
+            fluctuationLevel: 40,
+            overrides: ['hi hat', 'ride'],
+            volume: 90,
+            muted: true,
+            expanded: false
+          }
+        ];
+        this.meta = {
+          bpm: 120,
+          beatsLength: this.findLongest(),
+          futureTickTime: 0.0,
+          isPlaying: false
+        };
       }
     },
     futureTick() {
@@ -332,7 +352,7 @@ export default {
 
     },
     scheduler() {
-      while (this.meta.futureTickTime < this.meta.audioContext.currentTime + 0.1) {
+      while (this.meta.futureTickTime < this.audioContext.currentTime + 0.1) {
         this.scheduleNote();
         this.futureTick();
       }
@@ -378,12 +398,11 @@ export default {
           sound.current = 1;
         });
 
-        this.meta.futureTickTime = this.meta.audioContext.currentTime;
+        this.meta.futureTickTime = this.audioContext.currentTime;
         this.scheduler();
-        this.playLabel = 'stop';
       } else {
         window.clearTimeout(window.t);
-        this.playLabel = 'play';
+        this.saveData();
       }
     },
     findLongest() {
@@ -406,6 +425,12 @@ export default {
       window.setTimeout(() => {
         elem.setAttribute('class', '');
       }, 100);
+    },
+    saveData() {
+      var data = {};
+      data.sounds = this.sounds;
+      data.meta = this.meta;
+      this.$localStorage.set('drum-machine-state', JSON.stringify(data));
     }
   },
   watch: {
@@ -417,7 +442,9 @@ export default {
     }
   },
   mounted() {
+    this.audioContext = this.audioContextCheck();
     this.setState();
+    this.loadSounds();
     window.requestAnimFrame = (() => {
       return  window.requestAnimationFrame ||
               window.webkitRequestAnimationFrame ||
