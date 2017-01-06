@@ -13,6 +13,9 @@ elixir(function(mix) {
       'src/js/sw.js',
       'docs/sw.js'
     ).copy(
+      'src/manifest.json',
+      'docs/manifest.json'
+    ).copy(
       'src/js/sw-cache-polyfill.js',
       'docs/sw-cache-polyfill.js'
     ).copy(
