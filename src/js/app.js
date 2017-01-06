@@ -2,6 +2,7 @@ import Vue from 'vue';
 import VueLocalStorage from 'vue-localstorage'
 import Header from './components/Header.vue';
 import Machine from './components/Machine.vue';
+import PortraitWarning from './components/PortraitWarning.vue';
 
 Vue.use(VueLocalStorage);
 
@@ -18,6 +19,7 @@ new Vue({
   el: '#app',
   components: {
     'page-header': Header,
-    'drum-machine': Machine
+    'drum-machine': Machine,
+    'portrait-warning': PortraitWarning
   }
 });

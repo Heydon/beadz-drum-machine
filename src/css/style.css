@@ -1,5 +1,5 @@
 html {
-  font-size: calc(1em + 0.5vw);
+  font-size: calc(1em + 0.4vw);
   color: #222;
   font-family: Fredoka One, sans-serif;
   line-height: 1.5;
@@ -82,7 +82,8 @@ button svg {
 
 h1 {
   text-align: center;
-  font-size: 2rem;
+  font-size: 1.75rem;
+  margin-right: 1rem;
 }
 
 header {
@@ -92,7 +93,7 @@ header {
   justify-content: space-between;
   flex-wrap: wrap;
   color: #fff;
-  padding: 1rem;
+  padding: 0.5rem 1rem;
 }
 
 header p {
@@ -257,6 +258,7 @@ fieldset {
 
 .checkbox-group {
   display: flex;
+  flex-wrap: wrap;
 }
 
 .checkbox-group label {
@@ -281,29 +283,10 @@ fieldset {
   background-size: 100% auto;
 }
 
-/* bpm row */
-
-.bpm {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.bpm-slider {
-  width: 20%;
-  margin-right: 0.5rem;
-}
-
-.bpm label {
-  font-size: 1.25rem;
-  text-transform: uppercase;
-}
-
 /* main track */
 
 .track {
-  margin-top: 2rem;
+  margin-top: 1.75rem;
 }
 
 .track-main, .track-beats {
@@ -384,6 +367,8 @@ fieldset {
   border-radius: 0.125rem;
   position: absolute;
   right: 0;
+  top: 0.5rem;
+  bottom: 0.5rem;
 }
 
 /* track settings */
@@ -416,18 +401,44 @@ fieldset {
 .setting > :first-child {
   flex: 1;
   line-height: 1.125;
+  margin-right: 0.5rem;
 }
 
 .setting span[id] {
   display: none;
 }
 
-/* play/stop */
+/* bpm and play row */
 
-.play-stop {
-  text-align: center;
-  margin-top: 1em;
+.bpm-and-play {
+  display: flex;
+  justify-content: space-between;
 }
+
+/* bpm */
+
+.bpm {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 1rem;
+  width: 50%;
+}
+
+.bpm-slider {
+  margin-right: 0.5rem;
+  width: 50%;
+}
+
+.bpm label {
+  font-size: 1.25rem;
+  text-transform: uppercase;
+  position: relative;
+  top: 0.125em;
+}
+
+
+/* play/stop */
 
 .play-stop button {
   width: 3rem;
@@ -482,4 +493,15 @@ label[id] {
 
 .open-settings[aria-expanded="true"] {
   transform: rotate(45deg);
+}
+
+/* smaller viewports */
+
+@media (max-width: 650px) {
+
+  .central-col {
+    margin: 1em;
+    padding: 0;
+  }
+
 }

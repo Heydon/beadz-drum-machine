@@ -1,14 +1,21 @@
 <template>
   <div class="drum-machine">
-    <div class="bpm">
-      <div class="bpm-slider">
-        <input type="range" id="bpm" min="0" max="240" v-model="meta.bpm">
+    <div class="bpm-and-play">
+      <div class="bpm">
+        <div class="bpm-slider">
+          <input type="range" id="bpm" min="0" max="240" v-model="meta.bpm">
+        </div>
+        <label for="bpm">
+          {{meta.bpm}}
+          <span aria-hidden="true">bpm</span>
+          <span class="vh">beats per minute</span>
+        </label>
       </div>
-      <label for="bpm">
-        {{meta.bpm}}
-        <span aria-hidden="true">bpm</span>
-        <span class="vh">beats per minute</span>
-      </label>
+      <div class="play-stop">
+        <button :aria-pressed="meta.isPlaying.toString()" @click="playOrStop" aria-label="play">
+          <play-icon></play-icon>
+        </button>
+      </div>
     </div>
     <div class="tracks">
       <fieldset role="group" :aria-labelledby="sound.name + '-track-legend' | slugify" v-for="sound in sounds" class="track">
@@ -80,11 +87,6 @@
           </fieldset>
         </transition>
       </fieldset>
-    </div>
-    <div class="play-stop">
-      <button :aria-pressed="meta.isPlaying.toString()" @click="playOrStop" aria-label="play">
-        <play-icon></play-icon>
-      </button>
     </div>
   </div>
 </template>
