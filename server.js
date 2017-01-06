@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 
-app.use(express.static('public'));
+app.use(express.static('docs'));
 
 app.listen(3000, function() {
   app.get('/', (req, res) => {
