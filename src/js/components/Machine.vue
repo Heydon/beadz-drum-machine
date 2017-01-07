@@ -68,7 +68,7 @@
                 <input type="number" id="prob-in" min="1" v-model="sound.probability.in">
               </div>
             </div>
-            <div class="setting">
+            <div class="setting" v-if="meta.detuneSupport">
               <label for="fluc">Pitch fluctuation</label>
               <div>
                 <input type="range" id="fluc" min="0" max="100" v-model="sound.fluctuationLevel" aria-describedby="fluc-desc">
@@ -143,9 +143,12 @@ export default {
         var playSound = this.audioContext.createBufferSource();
         playSound.buffer = soundObject.soundToPlay;
 
-        // Naturalization by fluctuating pitch slightly
-        var bend = Math.floor(Math.random() * fluctuationLevel) + -Math.abs(fluctuationLevel);
-        playSound.detune.value = bend;
+        // Feature detect detune method
+        if (this.meta.detuneSupport) {
+          // Naturalization by fluctuating pitch slightly
+          var bend = Math.floor(Math.random() * fluctuationLevel) + -Math.abs(fluctuationLevel);
+          playSound.detune.value = bend;
+        }
 
         // Volume control
         playSound.connect(volume);
@@ -162,7 +165,6 @@ export default {
     },
     loadSounds() {
       this.sounds.forEach((sound) => {
-        console.log(sound.url);
         sound.buffer = this.soundLoader(sound.url);
       });
     },
@@ -172,7 +174,6 @@ export default {
         var savedData = JSON.parse(storage);
         this.sounds = savedData.sounds;
         this.meta = savedData.meta;
-        console.log(savedData);
       } else {
         this.sounds = [
           {
@@ -288,7 +289,8 @@ export default {
           bpm: 120,
           beatsLength: this.findLongest(),
           futureTickTime: 0.0,
-          isPlaying: false
+          isPlaying: false,
+          detuneSupport: true
         };
       }
     },
@@ -446,6 +448,11 @@ export default {
   mounted() {
     this.audioContext = this.audioContextCheck();
     this.setState();
+    // Test for detune method support
+    var testBufferResource = this.audioContext.createBufferSource();
+    if (!testBufferResource.detune) {
+      this.meta.detuneSupport = false;
+    }
     this.loadSounds();
     window.requestAnimFrame = (() => {
       return  window.requestAnimationFrame ||
