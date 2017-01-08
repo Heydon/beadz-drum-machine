@@ -267,7 +267,7 @@ export default {
             },
             probable: true,
             fluctuationLevel: 40,
-            overrides: [],
+            overrides: ['hi hat'],
             volume: 100,
             muted: true,
             expanded: false
