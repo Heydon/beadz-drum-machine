@@ -1,7 +1,7 @@
 <template>
   <div class="drum-machine">
+    <h2 class="vh">Main controls</h2>
     <div class="bpm-and-play">
-      <h2 class="vh">Main controls</h2>
       <div class="bpm">
         <div class="bpm-slider">
           <input type="range" id="bpm" min="0" max="240" v-model="meta.bpm">
