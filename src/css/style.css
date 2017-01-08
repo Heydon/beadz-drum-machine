@@ -492,6 +492,13 @@ label[id] {
   transform: rotate(45deg);
 }
 
+/* stats */
+
+.stats {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
 /* smaller viewports */
 
 @media (max-width: 750px) {

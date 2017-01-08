@@ -87,6 +87,9 @@
           </fieldset>
         </transition>
       </fieldset>
+      <div class="stats">
+        Polymetric pattern length: {{meta.compoundLength / 4}} beats ({{meta.compoundLength}} &#x00bc;-beats)
+      </div>
     </div>
   </div>
 </template>
@@ -225,7 +228,7 @@ export default {
             },
             probable: true,
             fluctuationLevel: 60,
-            overrides: [],
+            overrides: ['kick'],
             volume: 100,
             muted: false,
             expanded: false
@@ -287,7 +290,7 @@ export default {
         ];
         this.meta = {
           bpm: 120,
-          beatsLength: this.findLongest(),
+          beatsLength: this.lengthInfo.longest,
           futureTickTime: 0.0,
           isPlaying: false,
           detuneSupport: true
@@ -409,12 +412,15 @@ export default {
         this.saveData();
       }
     },
-    findLongest() {
+    lengthInfo() {
       var lengths = [];
       this.sounds.forEach((sound) => {
         lengths.push(sound.length);
       });
-      return Math.max.apply(Math, lengths);
+      return {
+        longest: Math.max.apply(Math, lengths),
+        lengths: lengths
+      }
     },
     slugify(text) {
       return text.toLowerCase()
@@ -440,7 +446,10 @@ export default {
   watch: {
     sounds: {
       handler() {
-        this.meta.beatsLength = 100 / this.findLongest() + '%';
+        var lengthInfo = this.lengthInfo();
+        this.meta.beatsLength = 100 / lengthInfo.longest + '%';
+        var uniqueLengths = lengthInfo.lengths.filter((v, i, a) => a.indexOf(v) === i);
+        this.meta.compoundLength = uniqueLengths.reduce((a, b) => a * b);
       },
       deep: true
     }
