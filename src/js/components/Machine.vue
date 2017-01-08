@@ -1,6 +1,7 @@
 <template>
   <div class="drum-machine">
     <div class="bpm-and-play">
+      <h2 class="vh">Main controls</h2>
       <div class="bpm">
         <div class="bpm-slider">
           <input type="range" id="bpm" min="0" max="240" v-model="meta.bpm">
@@ -18,6 +19,7 @@
       </div>
     </div>
     <div class="tracks">
+      <h2 class="vh">Tracks</h2>
       <fieldset role="group" :aria-labelledby="sound.name + '-track-legend' | slugify" v-for="sound in sounds" class="track">
         <legend :id="sound.name + '-track-legend' | slugify">{{sound.name}} track</legend>
         <div class="track-main">
@@ -88,6 +90,7 @@
         </transition>
       </fieldset>
       <div class="stats">
+        <h2 class="vh">Stats</h2>
         Polymetric pattern length: {{meta.compoundLength / 4}} beats ({{meta.compoundLength}} &#x00bc;-beats)
       </div>
     </div>
