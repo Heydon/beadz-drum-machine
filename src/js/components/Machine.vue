@@ -1,7 +1,7 @@
 <template>
-  <div class="drum-machine">
-    <h2 class="vh">Main controls</h2>
-    <div class="bpm-and-play">
+  <main class="drum-machine">
+    <h2 class="vh" id="dm-main-heading">Drum Machine Main Controls</h2>
+    <div class="bpm-and-play" aria-labelledby="dm-main-heading">
       <div class="bpm">
         <div class="bpm-slider">
           <input type="range" id="bpm" min="0" max="240" v-model="meta.bpm">
@@ -18,8 +18,8 @@
         </button>
       </div>
     </div>
-    <div class="tracks">
-      <h2 class="vh">Tracks</h2>
+    <div class="tracks" aria-labelledby="dm-tracks-heading">
+      <h2 class="vh" id="dm-tracks-heading">Drum Machine Tracks</h2>
       <fieldset role="group" :aria-labelledby="sound.name + '-track-legend' | slugify" v-for="sound in sounds" class="track">
         <legend :id="sound.name + '-track-legend' | slugify">{{sound.name}} track</legend>
         <div class="track-main">
@@ -89,12 +89,12 @@
           </fieldset>
         </transition>
       </fieldset>
-      <div class="stats">
-        <h2 class="vh">Stats</h2>
-        Polymetric pattern length: {{meta.compoundLength / 4}} beats ({{meta.compoundLength}} &#x00bc;-beats)
-      </div>
+      <aside class="stats">
+        <h2 class="vh">Drum Machine State Information</h2>
+        <p>Polymetric pattern length: {{meta.compoundLength / 4}} beats ({{meta.compoundLength}} &#x00bc;-beats)</p>
+      </aside>
     </div>
-  </div>
+  </main>
 </template>
 
 <script>

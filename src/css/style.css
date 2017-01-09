@@ -16,6 +16,7 @@ html {
 body {
   background: #fefefe;
   overflow-x: hidden;
+  padding-bottom: 1.5rem;
 }
 
 * {
@@ -51,11 +52,12 @@ button {
   border-radius: 50%;
 }
 
+a:focus,
 button:focus,
 .track-beats [type="checkbox"]:focus + label,
 .checkbox-group [type="checkbox"]:focus + label::before,
 [type="number"]:focus {
-  box-shadow: 0 0 0 0.25rem #fac;
+  box-shadow: 0 0 0 0.25rem #f0f;
   outline: none;
 }
 
@@ -75,7 +77,7 @@ button svg {
 /* main layout */
 
 .central-col {
-  margin: 3rem auto;
+  margin: 2.25rem auto;
   max-width: 45rem;
   padding: 0 1.5rem;
 }
@@ -138,7 +140,7 @@ input[type=range]::-webkit-slider-thumb {
 
 input[type=range]:focus::-webkit-slider-thumb {
   outline: none;
-  box-shadow: 0 0 0 0.25rem #fac;
+  box-shadow: 0 0 0 0.25rem #f0f;
 }
 
 input[type=range]::-moz-range-thumb {
@@ -153,7 +155,7 @@ input[type=range]::-moz-range-thumb {
 
 input[type=range]:focus::-moz-range-thumb {
   outline: none;
-  box-shadow: 0 0 0 0.25rem #fac;
+  box-shadow: 0 0 0 0.25rem #f0f;
 }
 
 input[type=range]::-ms-thumb {
@@ -172,7 +174,7 @@ input[type=range]:focus {
 
 input[type=range]:focus::-ms-thumb {
   outline: none;
-  box-shadow: 0 0 0 0.25rem #fac;
+  box-shadow: 0 0 0 0.25rem #f0f;
 }
 
 input[type=range]::-webkit-slider-runnable-track {
@@ -492,11 +494,23 @@ label[id] {
   transform: rotate(45deg);
 }
 
-/* stats */
+/* stats and footer */
 
 .stats {
-  margin-top: 1.5rem;
   text-align: center;
+  margin-top: 2.25rem;
+}
+
+footer {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 45rem;
+}
+
+footer::before {
+  content: '——————';
+  letter-spacing: -0.25rem;
 }
 
 /* smaller viewports */
