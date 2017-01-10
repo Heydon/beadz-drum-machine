@@ -1,6 +1,6 @@
 <template>
   <main class="drum-machine">
-    <form action="">
+    <form action>
       <h2 class="vh" id="dm-main-heading">Drum Machine Main Controls</h2>
       <div class="bpm-and-play" aria-labelledby="dm-main-heading">
         <div class="bpm">
@@ -26,10 +26,10 @@
           <div class="track-main">
             <div class="track-addRemove">
               <button aria-label="remove beat" @click.prevent="removeBeat(sound)">
-                <svg><use xlink:href="#minus"></use></svg>
+                <remove-icon></remove-icon>
               </button>
               <button aria-label="add beat" @click.prevent="addBeat(sound)">
-                <svg><use xlink:href="#plus"></use></svg>
+                <add-icon></add-icon>
               </button>
             </div>
             <div class="track-beats" role="group" :aria-labelledby="sound.name + '-track-label' | slugify">
@@ -47,7 +47,7 @@
                 <mute-icon></mute-icon>
               </button>
               <button class="open-settings" @click.prevent="sound.expanded = !sound.expanded" :aria-expanded="sound.expanded.toString()" aria-label="settings">
-                <svg><use xlink:href="#cog"></use></svg>
+                <settings-icon></settings-icon>
               </button>
             </div>
           </div>
@@ -61,16 +61,16 @@
                   <span id="vol-desc">From 0 to 100</span>
                 </div>
               </div>
-              <div class="setting">
-                <p aria-hidden="true">Probability</p>
-                <div role="group" aria-label="probability">
+              <fieldset class="setting" role="group" :aria-labelledby="sound.name + '-probability-label' | slugify">
+                <p :id="sound.name + '-probability-label' | slugify">Probability</p>
+                <div>
                   <label for="prob-chance" class="vh">Chance</label>
                   <input type="number" id="prob-chance" min="1" v-model="sound.probability.chance">
                   <span aria-hidden="true" class="between">in</span>
                   <label for="prob-in" class="vh">In</label>
                   <input type="number" id="prob-in" min="1" v-model="sound.probability.in">
                 </div>
-              </div>
+              </fieldset>
               <div class="setting" v-if="meta.detuneSupport">
                 <label for="fluc">Pitch fluctuation</label>
                 <div>
@@ -78,15 +78,15 @@
                   <span id="fluc-desc">From 0 to 100</span>
                 </div>
               </div>
-              <div class="setting">
-                <p aria-hidden="true">Override sounds</p>
-                <div class="checkbox-group" role="group" aria-label="Override other sounds">
+              <fieldset class="setting" role="group" :aria-labelledby="sound.name + '-overrides-label' | slugify">
+                <p :id="sound.name + '-overrides-label' | slugify">Overridden sounds</p>
+                <div class="checkbox-group">
                   <div v-for="otherSound in sounds" v-if="otherSound.name !== sound.name">
                     <input type="checkbox" :id="sound.name + '-overrides-' + otherSound.name | slugify" :value="otherSound.name" v-model="sound.overrides">
                     <label :for="sound.name + '-overrides-' + otherSound.name | slugify">{{otherSound.name}}</label>
                   </div>
                 </div>
-              </div>
+              </fieldset>
             </fieldset>
           </transition>
         </fieldset>
@@ -102,6 +102,9 @@
 <script>
 import PlayIcon from './PlayIcon.vue';
 import MuteIcon from './MuteIcon.vue';
+import AddIcon from './AddIcon.vue';
+import RemoveIcon from './RemoveIcon.vue';
+import SettingsIcon from './SettingsIcon.vue';
 
 export default {
   data() {
@@ -116,7 +119,10 @@ export default {
   },
   components: {
     'play-icon': PlayIcon,
-    'mute-icon': MuteIcon
+    'mute-icon': MuteIcon,
+    'add-icon': AddIcon,
+    'remove-icon': RemoveIcon,
+    'settings-icon': SettingsIcon
   },
   methods: {
     audioContextCheck() {
