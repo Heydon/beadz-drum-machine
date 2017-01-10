@@ -61,16 +61,16 @@
                   <span id="vol-desc">From 0 to 100</span>
                 </div>
               </div>
-              <fieldset class="setting" role="group" :aria-labelledby="sound.name + '-probability-label' | slugify">
-                <p :id="sound.name + '-probability-label' | slugify">Probability</p>
+              <div class="setting">
+                <p aria-hidden="true">Probability</p>
                 <div>
-                  <label for="prob-chance" class="vh">Chance</label>
+                  <label for="prob-chance" class="vh">Chance <span class="vh">(probability numerator)</span></label>
                   <input type="number" id="prob-chance" min="1" v-model="sound.probability.chance">
                   <span aria-hidden="true" class="between">in</span>
-                  <label for="prob-in" class="vh">In</label>
+                  <label for="prob-in" class="vh">In <span class="vh">(probability denominator)</span></label>
                   <input type="number" id="prob-in" min="1" v-model="sound.probability.in">
                 </div>
-              </fieldset>
+              </div>
               <div class="setting" v-if="meta.detuneSupport">
                 <label for="fluc">Pitch fluctuation</label>
                 <div>
@@ -78,15 +78,18 @@
                   <span id="fluc-desc">From 0 to 100</span>
                 </div>
               </div>
-              <fieldset class="setting" role="group" :aria-labelledby="sound.name + '-overrides-label' | slugify">
-                <p :id="sound.name + '-overrides-label' | slugify">Overridden sounds</p>
+              <div class="setting">
+                <p aria-hidden="true">Overridden sounds</p>
                 <div class="checkbox-group">
                   <div v-for="otherSound in sounds" v-if="otherSound.name !== sound.name">
                     <input type="checkbox" :id="sound.name + '-overrides-' + otherSound.name | slugify" :value="otherSound.name" v-model="sound.overrides">
-                    <label :for="sound.name + '-overrides-' + otherSound.name | slugify">{{otherSound.name}}</label>
+                    <label :for="sound.name + '-overrides-' + otherSound.name | slugify">
+                      <span class="vh">override</span>
+                      {{otherSound.name}}
+                    </label>
                   </div>
                 </div>
-              </fieldset>
+              </div>
             </fieldset>
           </transition>
         </fieldset>
