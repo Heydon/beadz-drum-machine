@@ -1,99 +1,101 @@
 <template>
   <main class="drum-machine">
-    <h2 class="vh" id="dm-main-heading">Drum Machine Main Controls</h2>
-    <div class="bpm-and-play" aria-labelledby="dm-main-heading">
-      <div class="bpm">
-        <div class="bpm-slider">
-          <input type="range" id="bpm" min="0" max="240" v-model="meta.bpm">
+    <form action="">
+      <h2 class="vh" id="dm-main-heading">Drum Machine Main Controls</h2>
+      <div class="bpm-and-play" aria-labelledby="dm-main-heading">
+        <div class="bpm">
+          <div class="bpm-slider">
+            <input type="range" id="bpm" min="0" max="240" v-model="meta.bpm">
+          </div>
+          <label for="bpm">
+            {{meta.bpm}}
+            <span aria-hidden="true">bpm</span>
+            <span class="vh">beats per minute</span>
+          </label>
         </div>
-        <label for="bpm">
-          {{meta.bpm}}
-          <span aria-hidden="true">bpm</span>
-          <span class="vh">beats per minute</span>
-        </label>
-      </div>
-      <div class="play-stop">
-        <button :aria-pressed="meta.isPlaying.toString()" @click="playOrStop" aria-label="play">
-          <play-icon></play-icon>
-        </button>
-      </div>
-    </div>
-    <div class="tracks" aria-labelledby="dm-tracks-heading">
-      <h2 class="vh" id="dm-tracks-heading">Drum Machine Tracks</h2>
-      <fieldset role="group" :aria-labelledby="sound.name + '-track-legend' | slugify" v-for="sound in sounds" class="track">
-        <legend :id="sound.name + '-track-legend' | slugify">{{sound.name}} track</legend>
-        <div class="track-main">
-          <div class="track-addRemove">
-            <button aria-label="remove beat" @click="removeBeat(sound)">
-              <svg><use xlink:href="#minus"></use></svg>
-            </button>
-            <button aria-label="add beat" @click="addBeat(sound)">
-              <svg><use xlink:href="#plus"></use></svg>
-            </button>
-          </div>
-          <div class="track-beats" role="group" :aria-labelledby="sound.name + '-track-label' | slugify">
-            <span class="track-label" :id="sound.name + '-track-label' | slugify">
-              <span class="vh">{{sound.length}} quarter beats for</span>
-              {{sound.name}}
-            </span>
-            <div v-for="n in sound.length" :style="{ width: meta.beatsLength }">
-              <input type="checkbox" :id="sound.name + '-beat-' + n | slugify" :value="n" v-model="sound.active">
-              <label :for="sound.name + '-beat-' + n | slugify" :id="sound.name + '-beat-' + n + '-label' | slugify"><span class="vh">Quarter Beat {{n}}</span></label>
-            </div>
-          </div>
-          <div class="track-muteSettings">
-            <button @click="sound.muted = !sound.muted" :aria-pressed="sound.muted.toString()" aria-label="mute">
-              <mute-icon></mute-icon>
-            </button>
-            <button class="open-settings" @click="sound.expanded = !sound.expanded" :aria-expanded="sound.expanded.toString()" aria-label="settings">
-              <svg><use xlink:href="#cog"></use></svg>
-            </button>
-          </div>
+        <div class="play-stop">
+          <button :aria-pressed="meta.isPlaying.toString()" @click.prevent="playOrStop" aria-label="play">
+            <play-icon></play-icon>
+          </button>
         </div>
-        <transition name="slide">
-          <fieldset role="group" aria-labelledby="track-settings-label" v-if="sound.expanded" class="track-settings">
-            <legend id="track-settings-label">Track settings</legend>
-            <div class="setting">
-              <label for="vol">Volume</label>
-              <div>
-                <input type="range" id="vol" min="0" max="100" v-model="sound.volume" aria-describedby="vol-desc">
-                <span id="vol-desc">From 0 to 100</span>
+      </div>
+      <div class="tracks" aria-labelledby="dm-tracks-heading">
+        <h2 class="vh" id="dm-tracks-heading">Drum Machine Tracks</h2>
+        <fieldset role="group" :aria-labelledby="sound.name + '-track-legend' | slugify" v-for="sound in sounds" class="track">
+          <legend :id="sound.name + '-track-legend' | slugify">{{sound.name}} track</legend>
+          <div class="track-main">
+            <div class="track-addRemove">
+              <button aria-label="remove beat" @click.prevent="removeBeat(sound)">
+                <svg><use xlink:href="#minus"></use></svg>
+              </button>
+              <button aria-label="add beat" @click.prevent="addBeat(sound)">
+                <svg><use xlink:href="#plus"></use></svg>
+              </button>
+            </div>
+            <div class="track-beats" role="group" :aria-labelledby="sound.name + '-track-label' | slugify">
+              <span class="track-label" :id="sound.name + '-track-label' | slugify">
+                <span class="vh">{{sound.length}} quarter beats for</span>
+                {{sound.name}}
+              </span>
+              <div v-for="n in sound.length" :style="{ width: meta.beatsLength }">
+                <input type="checkbox" :id="sound.name + '-beat-' + n | slugify" :value="n" v-model="sound.active">
+                <label :for="sound.name + '-beat-' + n | slugify" :id="sound.name + '-beat-' + n + '-label' | slugify"><span class="vh">Quarter Beat {{n}}</span></label>
               </div>
             </div>
-            <div class="setting">
-              <p aria-hidden="true">Probability</p>
-              <div role="group" aria-label="probability">
-                <label for="prob-chance" class="vh">Chance</label>
-                <input type="number" id="prob-chance" min="1" v-model="sound.probability.chance">
-                <span aria-hidden="true" class="between">in</span>
-                <label for="prob-in" class="vh">In</label>
-                <input type="number" id="prob-in" min="1" v-model="sound.probability.in">
-              </div>
+            <div class="track-muteSettings">
+              <button @click.prevent="sound.muted = !sound.muted" :aria-pressed="sound.muted.toString()" aria-label="mute">
+                <mute-icon></mute-icon>
+              </button>
+              <button class="open-settings" @click.prevent="sound.expanded = !sound.expanded" :aria-expanded="sound.expanded.toString()" aria-label="settings">
+                <svg><use xlink:href="#cog"></use></svg>
+              </button>
             </div>
-            <div class="setting" v-if="meta.detuneSupport">
-              <label for="fluc">Pitch fluctuation</label>
-              <div>
-                <input type="range" id="fluc" min="0" max="100" v-model="sound.fluctuationLevel" aria-describedby="fluc-desc">
-                <span id="fluc-desc">From 0 to 100</span>
-              </div>
-            </div>
-            <div class="setting">
-              <p aria-hidden="true">Override sounds</p>
-              <div class="checkbox-group" role="group" aria-label="Override other sounds">
-                <div v-for="otherSound in sounds" v-if="otherSound.name !== sound.name">
-                  <input type="checkbox" :id="sound.name + '-overrides-' + otherSound.name | slugify" :value="otherSound.name" v-model="sound.overrides">
-                  <label :for="sound.name + '-overrides-' + otherSound.name | slugify">{{otherSound.name}}</label>
+          </div>
+          <transition name="slide">
+            <fieldset role="group" aria-labelledby="track-settings-label" v-if="sound.expanded" class="track-settings">
+              <legend id="track-settings-label">Track settings</legend>
+              <div class="setting">
+                <label for="vol">Volume</label>
+                <div>
+                  <input type="range" id="vol" min="0" max="100" v-model="sound.volume" aria-describedby="vol-desc">
+                  <span id="vol-desc">From 0 to 100</span>
                 </div>
               </div>
-            </div>
-          </fieldset>
-        </transition>
-      </fieldset>
-      <aside class="stats">
-        <h2 class="vh">Drum Machine State Information</h2>
-        <p>Polymetric pattern length: {{meta.compoundLength / 4}} beats ({{meta.compoundLength}} &#x00bc;-beats)</p>
-      </aside>
-    </div>
+              <div class="setting">
+                <p aria-hidden="true">Probability</p>
+                <div role="group" aria-label="probability">
+                  <label for="prob-chance" class="vh">Chance</label>
+                  <input type="number" id="prob-chance" min="1" v-model="sound.probability.chance">
+                  <span aria-hidden="true" class="between">in</span>
+                  <label for="prob-in" class="vh">In</label>
+                  <input type="number" id="prob-in" min="1" v-model="sound.probability.in">
+                </div>
+              </div>
+              <div class="setting" v-if="meta.detuneSupport">
+                <label for="fluc">Pitch fluctuation</label>
+                <div>
+                  <input type="range" id="fluc" min="0" max="100" v-model="sound.fluctuationLevel" aria-describedby="fluc-desc">
+                  <span id="fluc-desc">From 0 to 100</span>
+                </div>
+              </div>
+              <div class="setting">
+                <p aria-hidden="true">Override sounds</p>
+                <div class="checkbox-group" role="group" aria-label="Override other sounds">
+                  <div v-for="otherSound in sounds" v-if="otherSound.name !== sound.name">
+                    <input type="checkbox" :id="sound.name + '-overrides-' + otherSound.name | slugify" :value="otherSound.name" v-model="sound.overrides">
+                    <label :for="sound.name + '-overrides-' + otherSound.name | slugify">{{otherSound.name}}</label>
+                  </div>
+                </div>
+              </div>
+            </fieldset>
+          </transition>
+        </fieldset>
+        <aside class="stats">
+          <h2 class="vh">Drum Machine State Information</h2>
+          <p>Polymetric pattern length: {{meta.compoundLength / 4}} beats ({{meta.compoundLength}} &#x00bc;-beats)</p>
+        </aside>
+      </div>
+    </form>
   </main>
 </template>
 
