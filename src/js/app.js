@@ -1,7 +1,6 @@
 import Vue from 'vue';
 import VueLocalStorage from 'vue-localstorage'
 import Machine from './components/Machine.vue';
-import PortraitWarning from './components/PortraitWarning.vue';
 
 Vue.use(VueLocalStorage);
 
@@ -17,7 +16,6 @@ Vue.filter('slugify', function (text) {
 new Vue({
   el: '#app',
   components: {
-    'drum-machine': Machine,
-    'portrait-warning': PortraitWarning
+    'drum-machine': Machine
   }
 });

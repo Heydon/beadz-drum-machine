@@ -24,13 +24,36 @@
           <p>By <a href="https://twitter.com/heydonworks">@heydonworks</a> &middot; <a href="https://github.com/Heydon/beadz-drum-machine">Manual and source code on Github</a>.</p>
         </footer>
       </div>
-      <portrait-warning></portrait-warning>
+      <div id="offline-confirm" role="alert"></div>
+      <div class="portrait-warning">
+        <div>
+          <h1>Beadz</h1>
+          <svg xmlns="http://www.w3.org/2000/svg" height="625.64" width="556.23" viewBox="0 0 556.23 625.64"><path d="M23.1 624.32C-12.78 609.26 5.14 563.7.35 533.9c-.2-112.6-.97-225.2.7-337.8 1.83-18.36 20.36-30.14 37.72-26.68l206.8.05c31.33 9.7 20.5 46.42 22.7 71.1.56 119.92 1.64 239.88-.2 359.8-6.7 33.08-46.34 23.63-70.87 25.02-58.02-.22-116.1.5-174.12-1.08zm118.77-19.4c35.58-17.44-18.95-58.86-26.48-20.6-2.48 14.5 12.95 26.86 26.47 20.6zm82.9-66.86c6.4-7.24 1.1-19.84 2.86-29.2-.34-93.5 1.6-187.03-.75-280.48 1.4-20.3-54.23-5.1-76.62-9.97-35.84.2-67.7.6-103.5 2.23-9.32 24.86-2.03 56.87-4.57 84.46-.12 76.8-.08 153.64-.1 230.46 7.1 9.35 20.32 3.1 30.4 4.9h149.48zM288.1 571c1.1-9.1-5-25.38 10.03-20.53 67.5-.6 135.22 1.54 202.56-1.68 8.7-25.74 2.4-56.28 4.2-83.98l-.3-95.2c-6-9.67-18.9-3.37-28.3-5.15H288.1v-41h244.46c25.47 7.83 24.22 37.3 23.28 58.76-.3 62.03 1.88 124.34-1.65 186.2-3.7 17.6-22.12 25.37-38.35 22.58l-227.76.5zm128.33-325.47c-11.8-12.74-57.2-58.25-28.2-67.87 35.04 9.3 12.8-40.83 7.82-56.4-28.2-63.1-100.66-100.04-168.4-89.3-39.8 5.23-74.58 28.16-100.87 57.64-19.36 18.12-25.77-20.88-5.3-35.1 63.16-56.08 156.92-73.75 230.8-26.13 52.94 32.53 86.32 91.6 90.37 153.25 17.08 2.15 48.42 1.38 18.6 31.28 0 0-26.97 37.36-44.84 32.63z" fill="#222"/></svg>
+          <p>Rotate your screen into a landscape orientation.</p>
+        </div>
+      </div>
     </div>
     <script src="js/app.js"></script>
     <script>
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('sw.js', {
           scope: './'
+        }).then(function(registration) {
+          var newWorker = registration.installing;
+
+          // statechange fires every time the ServiceWorker.state changes
+          newWorker.onstatechange = function() {
+            // show the message on activation
+            if (newWorker.state == 'activated' && !navigator.serviceWorker.controller) {
+              var liveRegion = document.getElementById('offline-confirm');
+              liveRegion.innerHTML = '<p>Ready to use offline!</p>';
+              window.setTimeout(function() {
+                liveRegion.innerHTML = '';
+              }, 6000);
+            }
+          };
+        }).catch(function(err) {
+          // registration failed :(
         });
       }
     </script>
