@@ -282,13 +282,13 @@ export default {
     }
   },
   components: {
-    'play-icon': PlayIcon,
-    'mute-icon': MuteIcon,
-    'add-icon': AddIcon,
-    'link-icon': LinkIcon,
-    'remove-icon': RemoveIcon,
-    'reset-icon': ResetIcon,
-    'settings-icon': SettingsIcon
+    PlayIcon,
+    MuteIcon,
+    AddIcon,
+    LinkIcon,
+    RemoveIcon,
+    ResetIcon,
+    SettingsIcon
   },
   methods: {
     audioContextCheck() {
