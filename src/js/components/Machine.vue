@@ -121,11 +121,11 @@ export default {
     }
   },
   components: {
-    'play-icon': PlayIcon,
-    'mute-icon': MuteIcon,
-    'add-icon': AddIcon,
-    'remove-icon': RemoveIcon,
-    'settings-icon': SettingsIcon
+    PlayIcon,
+    MuteIcon,
+    AddIcon,
+    RemoveIcon,
+    SettingsIcon
   },
   methods: {
     audioContextCheck() {
