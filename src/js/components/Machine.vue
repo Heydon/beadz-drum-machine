@@ -5,7 +5,7 @@
       <div class="bpm-and-play" aria-labelledby="dm-main-heading">
         <div class="bpm">
           <div class="bpm-slider">
-            <input type="range" id="bpm" min="0" max="240" v-model="meta.bpm">
+            <input type="range" id="bpm" min="0" max="240" v-model="meta.bpm" @blur="link">
           </div>
           <label for="bpm">
             {{meta.bpm}}
@@ -105,7 +105,7 @@
             </button>
             <div v-if="meta.linkUrl">
               <label for="linkField" class="vh">Copy a link to your drum pattern</label>
-              <input id="linkField" :value="meta.linkUrl" type="text" onfocus="this.select()" />
+              <input id="linkField" :value="meta.linkUrl" type="text" onfocus="this.select()" @focus="link" />
             </div>
           </div>
         </aside>
@@ -519,10 +519,14 @@ export default {
         }
     },
     addBeat(sound) {
-      sound.length += 1;
+      if (sound.length < 21) {
+        sound.length += 1;
+      }
     },
     removeBeat(sound) {
-      sound.length -= 1;
+      if (sound.length > 1) {
+        sound.length -= 1;
+      }
     },
     play() {
       this.meta.isPlaying = !this.meta.isPlaying;
@@ -576,7 +580,6 @@ export default {
         this.meta.beatsLength = 100 / lengthInfo.longest + '%';
         var uniqueLengths = lengthInfo.lengths.filter((v, i, a) => a.indexOf(v) === i);
         this.meta.compoundLength = uniqueLengths.reduce((a, b) => a * b);
-        this.meta.linkUrl = null;
       },
       deep: true
     }
