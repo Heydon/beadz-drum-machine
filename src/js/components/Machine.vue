@@ -540,6 +540,7 @@ export default {
       } else {
         window.clearTimeout(window.t);
         this.saveData();
+        this.link();
       }
     },
     lengthInfo() {
