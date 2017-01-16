@@ -56,6 +56,7 @@ a:focus,
 button:focus,
 .track-beats [type="checkbox"]:focus + label,
 .checkbox-group [type="checkbox"]:focus + label::before,
+[type="text"]:focus,
 [type="number"]:focus {
   box-shadow: 0 0 0 0.25rem #f0f;
   outline: none;
@@ -452,18 +453,31 @@ fieldset {
   display: none;
 }
 
-/* reset */
-.reset button {
-    width: 1.5rem;
-    height: 1.5rem;
+/* reset and link */
+
+.reset-and-link {
+  text-align: center;
 }
 
-/* link */
-.link button {
-    width: 1.5rem;
-    height: 1.5rem;
+.reset-and-link button {
+  border-radius: 0.25rem;
+  color: #fff;
+  text-transform: uppercase;
+  padding: 0.5rem 1rem;
+  font-size: 1.25rem;
+  font-weight: normal;
+  margin: 0.5rem;
+  letter-spacing: 1px;
 }
 
+/* link input */
+
+[type="text"] {
+  padding: 0.25rem;
+  width: 80%;
+  border: 1px solid;
+  font-family: monospace;
+}
 
 /* animations */
 

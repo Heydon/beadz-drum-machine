@@ -3,11 +3,6 @@
     <form action>
       <h2 class="vh" id="dm-main-heading">Drum Machine Main Controls</h2>
       <div class="bpm-and-play" aria-labelledby="dm-main-heading">
-        <div class="reset">
-          <button @click.prevent="reset" aria-label="reset">
-            <reset-icon></reset-icon>
-          </button>
-        </div>
         <div class="bpm">
           <div class="bpm-slider">
             <input type="range" id="bpm" min="0" max="240" v-model="meta.bpm">
@@ -21,11 +16,6 @@
         <div class="play-stop">
           <button :aria-pressed="meta.isPlaying.toString()" @click.prevent="playOrStop" aria-label="play">
             <play-icon></play-icon>
-          </button>
-        </div>
-        <div class="link">
-          <button @click.prevent="link" aria-label="link">
-            <link-icon></link-icon>
           </button>
         </div>
       </div>
@@ -106,6 +96,18 @@
         <aside class="stats">
           <h2 class="vh">Drum Machine State Information</h2>
           <p>Polymetric pattern length: {{meta.compoundLength / 4}} beats ({{meta.compoundLength}} &#x00bc;-beats)</p>
+          <div class="reset-and-link">
+            <button @click.prevent="reset">
+              Reset
+            </button>
+            <button @click.prevent="link">
+              Link
+            </button>
+            <div v-if="meta.linkUrl">
+              <label for="linkField" class="vh">Copy a link to your drum pattern</label>
+              <input id="linkField" :value="meta.linkUrl" type="text" onfocus="this.select()" />
+            </div>
+          </div>
         </aside>
       </div>
     </form>
@@ -116,9 +118,7 @@
 import PlayIcon from './PlayIcon.vue';
 import MuteIcon from './MuteIcon.vue';
 import AddIcon from './AddIcon.vue';
-import LinkIcon from './LinkIcon.vue';
 import RemoveIcon from './RemoveIcon.vue';
-import ResetIcon from './ResetIcon.vue';
 import SettingsIcon from './SettingsIcon.vue';
 
 
@@ -238,7 +238,8 @@ var defaultState = {
     beatsLength: 8,
     futureTickTime: 0.0,
     isPlaying: false,
-    detuneSupport: true
+    detuneSupport: true,
+    linkUrl: null
   }
 };
 
@@ -253,7 +254,7 @@ var soundProps = [
   'muted'
 ];
 
-var parseQuery = function (query) {
+var parseQuery = function(query) {
   if (query.startsWith('?')) {
       var parts = query.substring(1).split('&');
       var params = parts.reduce(function(agg, part) {
@@ -285,9 +286,7 @@ export default {
     PlayIcon,
     MuteIcon,
     AddIcon,
-    LinkIcon,
     RemoveIcon,
-    ResetIcon,
     SettingsIcon
   },
   methods: {
@@ -503,7 +502,7 @@ export default {
         }
     },
     link() {
-        var parts = ['bpm=' +this.meta.bpm];
+        var parts = ['bpm=' + this.meta.bpm];
         this.sounds.forEach(function(sound) {
             var persisted = soundProps.reduce(function(agg, prop) {
                 agg[prop] = sound[prop];
@@ -514,8 +513,9 @@ export default {
         });
 
         if (history.pushState) {
-          var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?' + parts.join('&');
-          window.history.pushState({path:newurl},'',newurl);
+          var newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?' + parts.join('&');
+          window.history.pushState({path:newUrl}, '', newUrl);
+          this.meta.linkUrl = newUrl;
         }
     },
     addBeat(sound) {
@@ -576,6 +576,7 @@ export default {
         this.meta.beatsLength = 100 / lengthInfo.longest + '%';
         var uniqueLengths = lengthInfo.lengths.filter((v, i, a) => a.indexOf(v) === i);
         this.meta.compoundLength = uniqueLengths.reduce((a, b) => a * b);
+        this.meta.linkUrl = null;
       },
       deep: true
     }

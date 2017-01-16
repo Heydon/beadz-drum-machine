@@ -29,5 +29,4 @@ self.addEventListener('fetch', function(event) {
     })
   );
 });
-
-// J5L2aA58Zc
+// hn2bvBu7Go
