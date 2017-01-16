@@ -32,6 +32,8 @@ Real drummers do not produce exactly the same sound each time they hit a drum. M
 
 **Beadz** emulates this variability by randomly altering the pitch of the triggered sound within close parameters. The level of fluctuation is adjustable for each track.
 
+(**Note:** Safari does not support this feature because Safari is a thrice-used prophylactic.)
+
 ## Accessibility
 
 **Beadz** has been designed to be operable using a keyboard and/or screen reader. If you have any problems using **Beadz**, please create an issue.

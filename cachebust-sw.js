@@ -1,4 +1,4 @@
-var random = require("randomstring");
+var random = require('randomstring');
 var fs = require('fs');
 
 var randomString = random.generate(10);
