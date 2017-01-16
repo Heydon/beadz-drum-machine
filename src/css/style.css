@@ -452,6 +452,19 @@ fieldset {
   display: none;
 }
 
+/* reset */
+.reset button {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+/* link */
+.link button {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+
 /* animations */
 
 @keyframes pulse {

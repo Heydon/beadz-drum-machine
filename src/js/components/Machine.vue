@@ -3,6 +3,11 @@
     <form action>
       <h2 class="vh" id="dm-main-heading">Drum Machine Main Controls</h2>
       <div class="bpm-and-play" aria-labelledby="dm-main-heading">
+        <div class="reset">
+          <button @click.prevent="reset" aria-label="reset">
+            <reset-icon></reset-icon>
+          </button>
+        </div>
         <div class="bpm">
           <div class="bpm-slider">
             <input type="range" id="bpm" min="0" max="240" v-model="meta.bpm">
@@ -16,6 +21,11 @@
         <div class="play-stop">
           <button :aria-pressed="meta.isPlaying.toString()" @click.prevent="playOrStop" aria-label="play">
             <play-icon></play-icon>
+          </button>
+        </div>
+        <div class="link">
+          <button @click.prevent="link" aria-label="link">
+            <link-icon></link-icon>
           </button>
         </div>
       </div>
@@ -106,8 +116,159 @@
 import PlayIcon from './PlayIcon.vue';
 import MuteIcon from './MuteIcon.vue';
 import AddIcon from './AddIcon.vue';
+import LinkIcon from './LinkIcon.vue';
 import RemoveIcon from './RemoveIcon.vue';
+import ResetIcon from './ResetIcon.vue';
 import SettingsIcon from './SettingsIcon.vue';
+
+
+var defaultState = {
+  sounds: [
+    {
+      name: 'kick',
+      url: 'sounds/kick.mp3',
+      buffer: null,
+      length: 8,
+      current: 1,
+      active: [1],
+      probability: {
+        chance: 1,
+        in: 1
+      },
+      probable: true,
+      fluctuationLevel: 0,
+      overrides: [],
+      volume: 100,
+      muted: false,
+      expanded: false
+    },
+    {
+      name: 'snare',
+      url: 'sounds/snare.mp3',
+      buffer: null,
+      length: 8,
+      current: 1,
+      active: [5],
+      probability: {
+        chance: 1,
+        in: 1
+      },
+      probable: true,
+      fluctuationLevel: 40,
+      overrides: ['kick', 'snare light'],
+      volume: 100,
+      muted: false,
+      expanded: false
+    },
+    {
+      name: 'snare light',
+      url: 'sounds/snare_light.mp3',
+      buffer: null,
+      length: 8,
+      current: 1,
+      active: [],
+      probability: {
+        chance: 1,
+        in: 1
+      },
+      probable: true,
+      fluctuationLevel: 60,
+      overrides: ['kick'],
+      volume: 100,
+      muted: false,
+      expanded: false
+    },
+    {
+      name: 'hi hat',
+      url: 'sounds/hat.mp3',
+      buffer: null,
+      length: 8,
+      current: 1,
+      active: [1, 3, 5, 7],
+      probability: {
+        chance: 1,
+        in: 1
+      },
+      probable: true,
+      fluctuationLevel: 60,
+      overrides: [],
+      volume: 80,
+      muted: false,
+      expanded: false
+    },
+    {
+      name: 'ride',
+      url: 'sounds/ride.mp3',
+      buffer: null,
+      length: 8,
+      current: 1,
+      active: [1, 5],
+      probability: {
+        chance: 1,
+        in: 1
+      },
+      probable: true,
+      fluctuationLevel: 40,
+      overrides: ['hi hat'],
+      volume: 100,
+      muted: true,
+      expanded: false
+    },
+    {
+      name: 'crash',
+      url: 'sounds/crash.mp3',
+      buffer: null,
+      length: 8,
+      current: 1,
+      active: [1],
+      probability: {
+        chance: 1,
+        in: 4
+      },
+      probable: true,
+      fluctuationLevel: 40,
+      overrides: ['hi hat', 'ride'],
+      volume: 90,
+      muted: true,
+      expanded: false
+    }
+  ],
+  meta: {
+    bpm: 120,
+    beatsLength: 8,
+    futureTickTime: 0.0,
+    isPlaying: false,
+    detuneSupport: true
+  }
+};
+
+var soundProps = [
+  'length',
+  'active',
+  'probable',
+  'probability',
+  'overrides',
+  'volume',
+  'fluctuationLevel',
+  'muted'
+];
+
+var parseQuery = function (query) {
+  if (query.startsWith('?')) {
+      var parts = query.substring(1).split('&');
+      var params = parts.reduce(function(agg, part) {
+          var bits = part.split('=');
+          var name = decodeURIComponent(bits[0]);
+          var values = agg[name] || [];
+          if (bits.length > 1) {
+              values.push(decodeURIComponent(bits[1]));
+          }
+          agg[name] = values;
+          return agg;
+      }, {});
+      return params;
+  }
+};
 
 export default {
   data() {
@@ -124,7 +285,9 @@ export default {
     PlayIcon,
     MuteIcon,
     AddIcon,
+    LinkIcon,
     RemoveIcon,
+    ResetIcon,
     SettingsIcon
   },
   methods: {
@@ -186,130 +349,37 @@ export default {
       });
     },
     setState() {
+
       var storage = this.$localStorage.get('drum-machine-state');
+
       if (storage) {
         var savedData = JSON.parse(storage);
         this.sounds = savedData.sounds;
         this.meta = savedData.meta;
       } else {
-        this.sounds = [
-          {
-            name: 'kick',
-            url: 'sounds/kick.mp3',
-            buffer: null,
-            length: 8,
-            current: 1,
-            active: [1],
-            probability: {
-              chance: 1,
-              in: 1
-            },
-            probable: true,
-            fluctuationLevel: 0,
-            overrides: [],
-            volume: 100,
-            muted: false,
-            expanded: false
-          },
-          {
-            name: 'snare',
-            url: 'sounds/snare.mp3',
-            buffer: null,
-            length: 8,
-            current: 1,
-            active: [5],
-            probability: {
-              chance: 1,
-              in: 1
-            },
-            probable: true,
-            fluctuationLevel: 40,
-            overrides: ['kick', 'snare light'],
-            volume: 100,
-            muted: false,
-            expanded: false
-          },
-          {
-            name: 'snare light',
-            url: 'sounds/snare_light.mp3',
-            buffer: null,
-            length: 8,
-            current: 1,
-            active: [],
-            probability: {
-              chance: 1,
-              in: 1
-            },
-            probable: true,
-            fluctuationLevel: 60,
-            overrides: ['kick'],
-            volume: 100,
-            muted: false,
-            expanded: false
-          },
-          {
-            name: 'hi hat',
-            url: 'sounds/hat.mp3',
-            buffer: null,
-            length: 8,
-            current: 1,
-            active: [1, 3, 5, 7],
-            probability: {
-              chance: 1,
-              in: 1
-            },
-            probable: true,
-            fluctuationLevel: 60,
-            overrides: [],
-            volume: 80,
-            muted: false,
-            expanded: false
-          },
-          {
-            name: 'ride',
-            url: 'sounds/ride.mp3',
-            buffer: null,
-            length: 8,
-            current: 1,
-            active: [1, 5],
-            probability: {
-              chance: 1,
-              in: 1
-            },
-            probable: true,
-            fluctuationLevel: 40,
-            overrides: ['hi hat'],
-            volume: 100,
-            muted: true,
-            expanded: false
-          },
-          {
-            name: 'crash',
-            url: 'sounds/crash.mp3',
-            buffer: null,
-            length: 8,
-            current: 1,
-            active: [1],
-            probability: {
-              chance: 1,
-              in: 4
-            },
-            probable: true,
-            fluctuationLevel: 40,
-            overrides: ['hi hat', 'ride'],
-            volume: 90,
-            muted: true,
-            expanded: false
-          }
-        ];
-        this.meta = {
-          bpm: 120,
-          beatsLength: this.lengthInfo.longest,
-          futureTickTime: 0.0,
-          isPlaying: false,
-          detuneSupport: true
-        };
+        this.sounds = JSON.parse(JSON.stringify(defaultState.sounds));
+        this.meta = JSON.parse(JSON.stringify(defaultState.meta));
       }
+
+      var queryState = parseQuery(window.location.search);
+      if (queryState) {
+        var params = Object.keys(queryState);
+        var state = {
+            sounds: [],
+            meta: {}
+        };
+        params.forEach(function(key) {
+            if (key === 'bpm') {
+                state.meta.bpm = JSON.parse(queryState.bpm[0]);
+            } else {
+                var sound = JSON.parse(queryState[key][0]);
+                sound.name = key;
+                state.sounds.push(sound);
+            }
+        });
+        this.updateState(state);
+      }
+
     },
     futureTick() {
       var noteLength = 60 / this.meta.bpm;
@@ -405,6 +475,48 @@ export default {
     },
     playOrStop() {
       this.play();
+    },
+    reset() {
+        this.updateState(defaultState);
+        if (history.pushState) {
+          var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+          window.history.pushState({path:newurl},'',newurl);
+        }
+    },
+    updateState(newState) {
+        if (newState.sounds) {
+            var soundsByName = newState.sounds.reduce(function(agg, sound) {
+                agg[sound.name] = sound;
+                return agg;
+            }, {});
+
+            this.sounds.forEach(function (sound) {
+                var newSound = soundsByName[sound.name];
+                soundProps.forEach(function(prop) {
+                    sound[prop] = JSON.parse(JSON.stringify(newSound[prop]));
+                });
+            });
+        }
+
+        if (newState.meta) {
+            this.meta.bpm = newState.meta.bpm;
+        }
+    },
+    link() {
+        var parts = ['bpm=' +this.meta.bpm];
+        this.sounds.forEach(function(sound) {
+            var persisted = soundProps.reduce(function(agg, prop) {
+                agg[prop] = sound[prop];
+                return agg;
+            }, {});
+            var part = encodeURIComponent(sound.name) + '=' + encodeURIComponent(JSON.stringify(persisted));
+            parts.push(part);
+        });
+
+        if (history.pushState) {
+          var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?' + parts.join('&');
+          window.history.pushState({path:newurl},'',newurl);
+        }
     },
     addBeat(sound) {
       sound.length += 1;
