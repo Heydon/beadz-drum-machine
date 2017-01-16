@@ -455,16 +455,15 @@ fieldset {
 
 /* reset and link */
 
-.reset-and-link {
+.link-section {
   text-align: center;
 }
 
-.reset-and-link button {
+.reset {
   border-radius: 0.25rem;
   color: #fff;
   text-transform: uppercase;
-  padding: 0.5rem 1rem;
-  font-size: 1.25rem;
+  padding: 0.25rem 5rem;
   font-weight: normal;
   margin: 0.5rem;
   letter-spacing: 1px;

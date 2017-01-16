@@ -95,16 +95,13 @@
         </fieldset>
         <aside class="stats">
           <h2 class="vh">Drum Machine State Information</h2>
-          <p>Polymetric pattern length: {{meta.compoundLength / 4}} beats ({{meta.compoundLength}} &#x00bc;-beats)</p>
-          <div class="reset-and-link">
-            <button @click.prevent="reset">
-              Reset
-            </button>
-            <button @click.prevent="link">
-              Link
-            </button>
+          <p>
+            Polymetric pattern length: {{meta.compoundLength / 4}} beats ({{meta.compoundLength}} &#x00bc;-beats)
+            <button @click.prevent="reset" class="reset">Reset</button>
+          </p>
+          <div class="link-section">
             <div v-if="meta.linkUrl">
-              <label for="linkField" class="vh">Copy a link to your drum pattern</label>
+              <label for="linkField">Link to your drum pattern:</label>
               <input id="linkField" :value="meta.linkUrl" type="text" onfocus="this.select()" @focus="link" />
             </div>
           </div>
@@ -481,6 +478,7 @@ export default {
           var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname;
           window.history.pushState({path:newurl},'',newurl);
         }
+        this.meta.linkUrl = null;
     },
     updateState(newState) {
         if (newState.sounds) {
