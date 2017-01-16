@@ -97,7 +97,7 @@
           <h2 class="vh">Drum Machine State Information</h2>
           <p>
             Polymetric pattern length: {{meta.compoundLength / 4}} beats ({{meta.compoundLength}} &#x00bc;-beats)
-            <button @click.prevent="reset" class="reset">Reset</button>
+            <button @click.prevent="reset" class="reset" :disabled="meta.isPlaying">Reset</button>
           </p>
           <div class="link-section">
             <div v-if="meta.linkUrl">

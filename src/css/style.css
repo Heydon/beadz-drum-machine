@@ -52,6 +52,10 @@ button {
   border-radius: 50%;
 }
 
+button:disabled {
+  opacity: 0.3;
+}
+
 a:focus,
 button:focus,
 .track-beats [type="checkbox"]:focus + label,
